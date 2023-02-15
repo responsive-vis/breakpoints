@@ -1,12 +1,12 @@
 <script>
-	import './global.css';
+	import { base } from '$app/paths';
 </script>
 
 <div id="header">
 	<h1>Data-driven Breakpoints for Responsive Visualization</h1>
 	<nav>
-		<a href="/">about</a> //
-		<a href="/demos/population-map">population map</a>
+		<a href="{base}/">about</a> //
+		<a href="{base}/demos/population-map">population map</a>
 	</nav>
 </div>
 
