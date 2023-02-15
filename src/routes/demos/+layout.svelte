@@ -1,3 +1,9 @@
+<script>
+	let divWidth, divHeight;
+	$: divAR = Math.round((divWidth / divHeight) * 100) / 100;
+	$: divArea = Math.round(divWidth * divHeight);
+</script>
+
 <div>
 	<input type="checkbox" id="show-landscape-overlay" /><label for="show-landscape-overlay"
 		>Show view landscape overlay</label
@@ -10,15 +16,15 @@
 	</em>
 	<br />
 	<ul>
-		<li>Width: <span id="widthOutput" />px</li>
-		<li>Height: <span id="heightOutput" />px</li>
-		<li>Aspect ratio: <span id="arOutput" /></li>
-		<li>Area: <span id="areaOutput" />px</li>
+		<li>Width: {divWidth} px</li>
+		<li>Height: {divHeight} px</li>
+		<li>Aspect ratio: {divAR}</li>
+		<li>Area: {divArea} px</li>
 	</ul>
 </div>
 
 <div id="outer-container">
-	<div id="container">
+	<div id="container" bind:offsetWidth={divWidth} bind:offsetHeight={divHeight}>
 		<slot />
 	</div>
 	<div id="landscape-overlay" />
