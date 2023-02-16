@@ -1,7 +1,17 @@
 <script>
-	let divWidth, divHeight;
-	$: divAR = Math.round((divWidth / divHeight) * 100) / 100;
-	$: divArea = Math.round(divWidth * divHeight);
+	import { onMount } from 'svelte';
+
+	export let width, height;
+	let divAR, divArea;
+	// let width, height;
+	// $: width;
+	// $: height;
+	// $: divAR = Math.round((width / height) * 100) / 100;
+	// $: divArea = Math.round(width * height);
+
+	// onMount(() => {
+	// 	console.log(height, width);
+	// });
 </script>
 
 <div>
@@ -16,17 +26,20 @@
 	</em>
 	<br />
 	<ul>
-		<li>Width: {divWidth} px</li>
-		<li>Height: {divHeight} px</li>
+		<li>Width: {width} px</li>
+		<li>Height: {height} px</li>
 		<li>Aspect ratio: {divAR}</li>
 		<li>Area: {divArea} px</li>
 	</ul>
 </div>
 
 <div id="outer-container">
-	<div id="container" bind:offsetWidth={divWidth} bind:offsetHeight={divHeight}>
-		<slot />
-	</div>
+	<!-- <div slot="container" let:item>{item.text}</div> -->
+	<!-- <slot bind:width bind:height /> -->
+	<!-- <div id="container" bind:offsetWidth={width} bind:offsetHeight={height}> -->
+	<!-- <div id="container" bind:offsetWidth={width} bind:offsetHeight={height}><slot /></div> -->
+	<slot />
+	<!-- </div> -->
 	<div id="landscape-overlay" />
 </div>
 
@@ -34,12 +47,13 @@
 	#outer-container {
 		position: relative;
 	}
-	#container {
+	/* moved to +page until i can figure this out */
+	/* #container {
 		overflow: hidden;
 		resize: both;
 		position: relative;
 		border: 1px solid #ccc;
-	}
+	} */
 	#landscape-overlay {
 		position: absolute;
 		left: 1px;
