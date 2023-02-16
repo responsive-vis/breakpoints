@@ -14,6 +14,9 @@
 	params.minSize = params.minSize ? params.minSize : { w: 50, h: 50 };
 	params.container = params.container ? params.container : '#container';
 	// throw warning if viewStates is undefined
+
+	let conditionsCircleMap;
+	$: console.log(conditionsCircleMap);
 </script>
 
 <!-- hard coding the circle map for now -->
@@ -30,7 +33,12 @@
 	bind:offsetHeight={height}
 >
 	<svg width={params.maxSize.w} height={params.maxSize.h} id="svg">
-		<CircleMap {data} {params} context={{ width: width, height: height }} />
+		<CircleMap
+			{data}
+			{params}
+			context={{ width: width, height: height }}
+			bind:conditions={conditionsCircleMap}
+		/>
 	</svg>
 </div>
 

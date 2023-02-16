@@ -1,25 +1,52 @@
 <script>
 	// Adapted for Svelte from https://observablehq.com/@harrystevens/circle-legend
 
-	export let x = 0,
-		y = 0, // position
+	export let x,
+		y,
+		anchorX = 'left',
+		anchorY = 'top', // position
 		scale,
 		tickValues,
 		tickFormat = (d) => d,
 		tickSize = 5,
+		color = '#000',
 		s = 1; // scale factor for resizing
 
 	let ticks = tickValues || scale.ticks();
 	ticks = ticks.slice().reverse();
 
 	const max = ticks[0];
+
+	let left, top;
+	switch (anchorX) {
+		case 'left':
+			left = x;
+			break;
+		case 'right':
+			left = x - 2 * scale(max);
+			break;
+		case 'center':
+			left = x - scale(max);
+			break;
+	}
+	switch (anchorY) {
+		case 'top':
+			top = y;
+			break;
+		case 'bottom':
+			top = y - 2 * scale(max);
+			break;
+		case 'center':
+			top = y - scale(max);
+			break;
+	}
 </script>
 
-<g transform={`translate(${[x, y]})`} stroke-width={`${1 / s}px`}>
+<g transform={`translate(${[left, top]})`} stroke-width={`${1 / s}px`}>
 	{#each ticks as d, i}
-		<circle fill="none" stroke="currentColor" cx={scale(max)} cy={scale(d)} r={scale(d)} />
+		<circle fill="none" stroke={color} cx={scale(max)} cy={scale(d)} r={scale(d)} />
 		<line
-			stroke="currentColor"
+			stroke={color}
 			stroke-dasharray={`${4 / s}, ${2 / s}`}
 			x1={scale(max)}
 			x2={tickSize + scale(max) * 2}
