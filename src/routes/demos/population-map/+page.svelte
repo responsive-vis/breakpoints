@@ -1,11 +1,11 @@
 <script>
-	// import { responsiveVis } from '$lib/breakpoints.js';
 	import * as d3 from 'd3';
-	import CircleMap from '$lib/viz/CircleMap.svelte';
-	import * as data from '/src/data/world_with_continent.json';
-	// import ResponsiveVis from '../../../lib/viz/ResponsiveVis.svelte';
+	import StatusBar from '$lib/viz/StatusBar.svelte';
 
-	let width, height;
+	import * as data from '/src/data/world_with_continent.json';
+	import ResponsiveVis from '$lib/viz/ResponsiveVis.svelte';
+
+	export let width, height;
 	$: width;
 	$: height;
 
@@ -136,18 +136,6 @@
 </script>
 
 <!-- <slot /> -->
+<StatusBar {width} {height} />
 
-<div id="container" bind:offsetWidth={width} bind:offsetHeight={height}>
-	<svg width={params.maxSize.w} height={params.maxSize.h} id="svg">
-		<CircleMap {data} {params} />
-	</svg>
-</div>
-
-<style>
-	#container {
-		overflow: hidden;
-		resize: both;
-		position: relative;
-		border: 1px solid #ccc;
-	}
-</style>
+<ResponsiveVis {data} {params} bind:width bind:height />

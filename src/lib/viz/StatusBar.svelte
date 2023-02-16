@@ -2,16 +2,13 @@
 	import { onMount } from 'svelte';
 
 	export let width, height;
-	let divAR, divArea;
-	// let width, height;
-	// $: width;
-	// $: height;
-	// $: divAR = Math.round((width / height) * 100) / 100;
-	// $: divArea = Math.round(width * height);
+	$: width;
+	$: height;
 
-	// onMount(() => {
-	// 	console.log(height, width);
-	// });
+	let divAR, divArea;
+
+	$: divAR = Math.round((width / height) * 100) / 100;
+	$: divArea = Math.round(width * height);
 </script>
 
 <div>

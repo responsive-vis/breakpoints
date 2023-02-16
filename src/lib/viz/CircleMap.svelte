@@ -1,6 +1,7 @@
 <script>
 	export let data;
 	export let params;
+	export let context;
 
 	import * as d3 from 'd3';
 	import { onMount } from 'svelte';
