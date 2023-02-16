@@ -1,79 +1,37 @@
 <script>
-	// Circle Legend
-	// from https://observablehq.com/@harrystevens/circle-legend
-	const legendCircle = function (context) {
-		let scale,
-			tickValues,
-			tickFormat = (d) => d,
-			tickSize = 5,
-			g;
+	// Adapted for Svelte from https://observablehq.com/@harrystevens/circle-legend
 
-		function legend(context) {
-			g = context.select('g');
-			if (!g._groups[0][0]) {
-				g = context.append('g');
-			}
-			g.attr('transform', `translate(${[1, 1]})`);
+	export let x = 0,
+		y = 0, // position
+		scale,
+		tickValues,
+		tickFormat = (d) => d,
+		tickSize = 5,
+		s = 1; // scale factor for resizing
 
-			const ticks = tickValues || scale.ticks();
+	let ticks = tickValues || scale.ticks();
+	ticks = ticks.slice().reverse();
 
-			const max = ticks[ticks.length - 1];
-
-			g.selectAll('circle')
-				.data(ticks.slice().reverse())
-				.enter()
-				.append('circle')
-				.attr('fill', 'none')
-				.attr('stroke', 'currentColor')
-				.attr('cx', scale(max))
-				.attr('cy', scale)
-				.attr('r', scale);
-
-			g.selectAll('line')
-				.data(ticks)
-				.enter()
-				.append('line')
-				.attr('stroke', 'currentColor')
-				.attr('stroke-dasharray', '4, 2')
-				.attr('x1', scale(max))
-				.attr('x2', tickSize + scale(max) * 2)
-				.attr('y1', (d) => scale(d) * 2)
-				.attr('y2', (d) => scale(d) * 2);
-
-			g.selectAll('text')
-				.data(ticks)
-				.enter()
-				.append('text')
-				.attr('font-family', "'Helvetica Neue', sans-serif")
-				.attr('font-size', 11)
-				.attr('dominant-baseline', 'central')
-				.attr('x', tickSize + scale(max) * 2)
-				.attr('y', (d) => scale(d) * 2)
-				.text(tickFormat);
-		}
-
-		legend.tickSize = function (_) {
-			return arguments.length ? ((tickSize = +_), legend) : tickSize;
-		};
-
-		legend.scale = function (_) {
-			return arguments.length ? ((scale = _), legend) : scale;
-		};
-
-		legend.tickFormat = function (_) {
-			return arguments.length ? ((tickFormat = _), legend) : tickFormat;
-		};
-
-		legend.tickValues = function (_) {
-			return arguments.length ? ((tickValues = _), legend) : tickValues;
-		};
-
-		legend.adapt = function (s) {
-			g.attr('stroke-width', `${1 / s}px`);
-			g.selectAll('line').attr('stroke-dasharray', `${4 / s}, ${2 / s}`);
-			g.selectAll('text').attr('font-size', 11 / s);
-		};
-
-		return legend;
-	};
+	const max = ticks[0];
 </script>
+
+<g transform={`translate(${[x, y]})`} stroke-width={`${1 / s}px`}>
+	{#each ticks as d, i}
+		<circle fill="none" stroke="currentColor" cx={scale(max)} cy={scale(d)} r={scale(d)} />
+		<line
+			stroke="currentColor"
+			stroke-dasharray={`${4 / s}, ${2 / s}`}
+			x1={scale(max)}
+			x2={tickSize + scale(max) * 2}
+			y1={scale(d) * 2}
+			y2={scale(d) * 2}
+		/>
+		<text
+			font-family="'Helvetica Neue', sans-serif"
+			font-size={11 / s}
+			dominant-baseline="central"
+			x={tickSize + scale(max) * 2}
+			y={scale(d) * 2}>{tickFormat(d, i)}</text
+		>
+	{/each}
+</g>
