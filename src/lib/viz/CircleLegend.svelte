@@ -5,7 +5,7 @@
 		y,
 		anchorX = 'left',
 		anchorY = 'top', // position
-		scale,
+		scale, // the scale function used for the circles
 		tickValues,
 		tickFormat = (d) => d,
 		tickSize = 5,
@@ -13,7 +13,7 @@
 		s = 1; // scale factor for resizing
 
 	let ticks = tickValues || scale.ticks();
-	ticks = ticks.slice().reverse();
+	ticks.sort((a, b) => b - a);
 
 	const max = ticks[0];
 
@@ -21,7 +21,7 @@
 	const top = anchorY == 'top' ? y : anchorY == 'bottom' ? y - 2 * scale(max) : y - scale(max);
 </script>
 
-<g transform={`translate(${[left, top]})`} stroke-width={`${1 / s}px`}>
+<g transform={`translate(${[left, top]})`} stroke-width="{1 / s}px">
 	{#each ticks as d, i}
 		<circle fill="none" stroke={color} cx={scale(max)} cy={scale(d)} r={scale(d)} />
 		<line
@@ -34,7 +34,7 @@
 		/>
 		<text
 			font-family="'Helvetica Neue', sans-serif"
-			font-size={11 / s}
+			font-size={12 / s}
 			dominant-baseline="central"
 			x={tickSize + scale(max) * 2}
 			y={scale(d) * 2}>{tickFormat(d, i)}</text

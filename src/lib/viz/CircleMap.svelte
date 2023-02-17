@@ -3,47 +3,71 @@
 	export let params;
 	export let context;
 	export let conditions;
+	export let display;
 
-	// let width,height;
 	$: height = context.height;
 	$: width = context.width;
+	$: display;
 
 	import * as d3 from 'd3';
-	import { onMount } from 'svelte';
 
 	import Tooltip from './Tooltip.svelte';
 	import CircleLegend from '$lib/viz/CircleLegend.svelte';
-	// import CircleLegend from './CircleLegend.svelte';
-
-	let params_local = params.viewStates.circleMap;
 
 	let map, circles;
 
 	// fit projection to container + geo data
-	const projection = params_local.projection;
-	projection.fitSize([params.initSize.w, params.initSize.h], data);
+	const initW = 500;
+	const initH = 500;
+	const projection = params.projection;
+	projection.fitSize([initW, initH], data);
 	const path = d3.geoPath(projection);
 
 	const bounds = path.bounds(data);
 	const mapAR = (bounds[1][0] - bounds[0][0]) / (bounds[1][1] - bounds[0][1]);
 
 	const mapInitSize =
-		params.initSize.w / params.initSize.h < mapAR
-			? { width: params.initSize.w, height: params.initSize.w / mapAR }
-			: { width: params.initSize.h * mapAR, height: params.initSize.h };
+		initW / initH < mapAR
+			? { width: initW, height: initW / mapAR }
+			: { width: initH * mapAR, height: initH };
 
-	// circle radius for prop circle map
+	// circle radius (slightly bigger for Dorling)
 	const r = d3
 		.scaleSqrt()
 		.domain([0, d3.max(data.features, (d) => d.properties.POP_EST)])
-		.range([0, Math.sqrt(params.initSize.w * params.initSize.h) / 13]);
+		.range([0, Math.sqrt(initW * initH) / (params.dorling ? 12 : 14)]);
+
+	if (params.dorling) {
+		// get Dorling cartogram positions
+		// adds/updates d.x and d.y
+		let dorlingSimulation = d3
+			.forceSimulation(data.features)
+			.force(
+				'x',
+				d3.forceX((d) => projection(d.properties.centroid)[0])
+			)
+			.force(
+				'y',
+				d3.forceY((d) => projection(d.properties.centroid)[1])
+			)
+			.force(
+				'collide',
+				d3.forceCollide((d) => r(d.properties.POP_EST))
+			)
+			.stop();
+		dorlingSimulation.tick(200);
+		data.features.forEach(function (d) {
+			d.properties.dorlingX = d.x;
+			d.properties.dorlingY = d.y;
+		});
+	}
 
 	// Tooltip
 	let x, y, content;
 	$: x, y, content;
 	function handleMouseover(event, feature) {
-		x = projection(feature.properties.centroid)[0];
-		y = projection(feature.properties.centroid)[1];
+		x = params.dorling ? feature.properties.dorlingX : projection(feature.properties.centroid)[0];
+		y = params.dorling ? feature.properties.dorlingY : projection(feature.properties.centroid)[1];
 		content = feature.properties.ADMIN;
 	}
 	function handleMouseout(event) {
@@ -65,78 +89,61 @@
 	$: containerAR = width / height;
 
 	$: conditions =
-		r(lower_bound) * s > params_local.conditions.minCircleRadius && // min r - at least 90% of circles visible
-		containerAR / mapAR >= 1 / params_local.conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
-		containerAR / mapAR <= params_local.conditions.maxAspectRatioDiff;
-
-	// position legend in bottom left of map area
-	// get size of legend
-	// const legendBBox = legend.node().getBBox();
-	// legend.attr('transform', `translate(${5},${mapInitBBox.height - legendBBox.height - 5})`);
-	// for custom positioning
-	// .attr("transform", `translate(${params_local.legendPosition[0]},${params_local.legendPosition[1]})`)
+		r(lower_bound) * s > params.conditions.minCircleRadius && // min r - at least 90% of circles visible
+		containerAR / mapAR >= 1 / params.conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
+		containerAR / mapAR <= params.conditions.maxAspectRatioDiff;
 </script>
 
-<g class="circleMap viewState" transform="translate({t[0]},{t[1]}) scale({s})">
-	<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
-	<g id="map" bind:this={map} transform="translate({-bounds[0][0]}, {-bounds[0][1]})">
-		{#each data.features as feature}
-			<path
-				class="country"
-				id={feature.properties.ISO_A3}
-				d={path(feature)}
-				fill="#f5f5f5"
-				stroke="#e0e0e0"
-				stroke-width="{0.7 / s}px"
-			/>
-		{/each}
+<!-- only display if this view state is selected -->
+{#if display}
+	<g
+		class="circleMap viewState"
+		transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
+	>
+		<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
+		<g id="map" bind:this={map}>
+			{#each data.features as feature}
+				<path
+					class="country"
+					id={feature.properties.ISO_A3}
+					d={path(feature)}
+					fill="#f5f5f5"
+					stroke="#e0e0e0"
+					stroke-width="{0.7 / s}px"
+				/>
+			{/each}
+		</g>
+		<g id="circles" bind:this={circles}>
+			{#each data.features as feature}
+				<circle
+					r={r(feature.properties.POP_EST)}
+					cx={params.dorling
+						? feature.properties.dorlingX
+						: projection(feature.properties.centroid)[0]}
+					cy={params.dorling
+						? feature.properties.dorlingY
+						: projection(feature.properties.centroid)[1]}
+					fill={params.circleColor(feature)}
+					stroke={params.circleColor(feature)}
+					fill-opacity="0.4"
+					stroke-width="{1 / s}px"
+					on:focus={(e) => handleMouseover(e, feature)}
+					on:mouseover={(e) => handleMouseover(e, feature)}
+					on:mouseout={handleMouseout}
+					on:blur={handleMouseout}
+				/>
+			{/each}
+		</g>
+		<CircleLegend
+			x={5 + bounds[0][0]}
+			y={mapInitSize.height + bounds[0][1] - 5}
+			anchorX="left"
+			anchorY="bottom"
+			scale={r}
+			tickValues={params.legendTickValues}
+			tickFormat={params.legendTickFormat}
+			{s}
+		/>
+		<Tooltip bind:x bind:y bind:content fontsize={12 / s} />
 	</g>
-	<g id="circles" bind:this={circles} transform="translate({-bounds[0][0]}, {-bounds[0][1]})">
-		{#each data.features as feature}
-			<circle
-				r={r(feature.properties.POP_EST)}
-				cx={projection(feature.properties.centroid)[0]}
-				cy={projection(feature.properties.centroid)[1]}
-				fill={params_local.circleColor(feature)}
-				fill-opacity="0.4"
-				stroke-width="{1 / s}px"
-				on:focus={(e) => handleMouseover(e, feature)}
-				on:mouseover={(e) => handleMouseover(e, feature)}
-				on:mouseout={handleMouseout}
-				on:blur={handleMouseout}
-			/>
-		{/each}
-	</g>
-	<CircleLegend
-		x={5 - bounds[0][0]}
-		y={mapInitSize.height - bounds[0][1]}
-		anchorX="left"
-		anchorY="bottom"
-		scale={r}
-		tickValues={params_local.legendTickValues}
-		tickFormat={params_local.legendTickFormat}
-		s={1}
-	/>
-	<Tooltip bind:x bind:y bind:content />
-</g>
-
-<!-- circles
-.selectAll('circle')
-.data(data.features)
-.enter()
-.append('circle')
-.attr('r', (d) => r(d.properties.POP_EST))
-.attr('cx', (d) => projection(d.properties.centroid)[0])
-.attr('cy', (d) => projection(d.properties.centroid)[1])
-.attr('fill', params_local.circleColor)
-.attr('fill-opacity', 0.4)
-.attr('stroke', params_local.circleColor)
-.on('mouseover', function (d) {
-    d3.select('#tooltip')
-        .attr('x', d3.select(this).attr('cx'))
-        .attr('y', d3.select(this).attr('cy'))
-        .text(d.originalTarget.__data__.properties.ADMIN);
-})
-.on('mouseout', function () {
-    d3.select('#tooltip').attr('x', -100).attr('y', -100);
-}); -->
+{/if}

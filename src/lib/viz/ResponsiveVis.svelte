@@ -4,22 +4,15 @@
 	export let width;
 	export let height;
 
-	import CircleMap from './CircleMap.svelte';
-
-	let circleMapParams = params.viewStates.circleMap;
-
 	// default parameters
 	params.initSize = params.initSize ? params.initSize : { w: 600, h: 400 };
 	params.maxSize = params.maxSize ? params.maxSize : { w: 1000, h: 700 };
 	params.minSize = params.minSize ? params.minSize : { w: 50, h: 50 };
-	params.container = params.container ? params.container : '#container';
-	// throw warning if viewStates is undefined
 
-	let conditionsCircleMap;
-	$: console.log(conditionsCircleMap);
+	let conditions = Array(params.viewStates.length).fill(true); // intialise array with TRUE for each view state
+	$: conditions;
+	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 </script>
-
-<!-- hard coding the circle map for now -->
 
 <div
 	id="container"
@@ -33,12 +26,16 @@
 	bind:offsetHeight={height}
 >
 	<svg width={params.maxSize.w} height={params.maxSize.h} id="svg">
-		<CircleMap
-			{data}
-			{params}
-			context={{ width: width, height: height }}
-			bind:conditions={conditionsCircleMap}
-		/>
+		{#each params.viewStates as viewState, i}
+			<svelte:component
+				this={viewState.type}
+				{data}
+				params={viewState.params}
+				context={{ width: width, height: height }}
+				bind:conditions={conditions[i]}
+				display={display == i}
+			/>
+		{/each}
 	</svg>
 </div>
 
