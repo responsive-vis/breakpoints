@@ -17,29 +17,8 @@
 
 	const max = ticks[0];
 
-	let left, top;
-	switch (anchorX) {
-		case 'left':
-			left = x;
-			break;
-		case 'right':
-			left = x - 2 * scale(max);
-			break;
-		case 'center':
-			left = x - scale(max);
-			break;
-	}
-	switch (anchorY) {
-		case 'top':
-			top = y;
-			break;
-		case 'bottom':
-			top = y - 2 * scale(max);
-			break;
-		case 'center':
-			top = y - scale(max);
-			break;
-	}
+	const left = anchorX == 'left' ? x : anchorX == 'right' ? x - 2 * scale(max) : x - scale(max);
+	const top = anchorY == 'top' ? y : anchorY == 'bottom' ? y - 2 * scale(max) : y - scale(max);
 </script>
 
 <g transform={`translate(${[left, top]})`} stroke-width={`${1 / s}px`}>
