@@ -1,5 +1,6 @@
 <script>
 	export let width, height;
+	export let landscapeOverlay;
 
 	$: width;
 	$: height;
@@ -12,6 +13,9 @@
 
 <div id="controls">
 	<!-- <button id="export-landscape">Export view landscape</button><br /> -->
+	<!-- function createExportButton(landscape) {
+		d3.select('#export-landscape').on('click', () => window.open(landscape));
+	} -->
 	<em>
 		Resize the container using the handle in the botton right and watch the visualization update
 		(Chrome/Firefox only).
@@ -25,27 +29,12 @@
 		<li />
 	</ul>
 	<br />
-	<input type="checkbox" id="show-landscape-overlay" /><label for="show-landscape-overlay"
-		>Show view landscape overlay</label
+	<input type="checkbox" id="show-landscape-overlay" bind:checked={landscapeOverlay} /><label
+		for="show-landscape-overlay">Show view landscape overlay</label
 	>
 </div>
 
-<div id="outer-container">
-	<slot />
-	<div id="landscape-overlay" />
-</div>
-
 <style>
-	#outer-container {
-		position: relative;
-	}
-	#landscape-overlay {
-		position: absolute;
-		left: 1px;
-		top: 1px;
-		pointer-events: none;
-		opacity: 0.35;
-	}
 	#controls {
 		line-height: 1em;
 	}

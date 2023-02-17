@@ -3,6 +3,7 @@
 	export let params;
 	export let context;
 	export let conditions;
+	export let calculateConditions;
 	export let display;
 
 	$: height = context.height;
@@ -77,6 +78,7 @@
 	}
 
 	// compute scale + translate so that map is always at max size, centered within the container
+	let s = 1;
 	$: s = mapAR > width / height ? width / mapInitSize.width : height / mapInitSize.height;
 	$: t =
 		mapAR < width / height
@@ -84,14 +86,23 @@
 			: [0, (height - s * mapInitSize.height) / 2];
 
 	// calculate some things for conditions
-	let pop_vals = data.features.map((d) => d.properties.POP_EST);
-	let lower_bound = pop_vals.sort((a, b) => a - b)[Math.floor(pop_vals.length * 0.1)];
+	const pop_vals = data.features.map((d) => d.properties.POP_EST);
+	const lower_bound = pop_vals.sort((a, b) => a - b)[Math.floor(pop_vals.length * 0.1)];
 	$: containerAR = width / height;
 
 	$: conditions =
 		r(lower_bound) * s > params.conditions.minCircleRadius && // min r - at least 90% of circles visible
 		containerAR / mapAR >= 1 / params.conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
 		containerAR / mapAR <= params.conditions.maxAspectRatioDiff;
+
+	calculateConditions = function (w, h) {
+		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
+		return (
+			r(lower_bound) * s > params.conditions.minCircleRadius && // min r - at least 90% of circles visible
+			w / h / mapAR >= 1 / params.conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
+			w / h / mapAR <= params.conditions.maxAspectRatioDiff
+		);
+	};
 </script>
 
 <!-- only display if this view state is selected -->

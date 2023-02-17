@@ -4,6 +4,7 @@
 	import * as data from '/src/data/world_with_continent.json';
 
 	import StatusBar from '$lib/viz/StatusBar.svelte';
+	import ViewLandscapeOverlay from '$lib/ViewLandscapeOverlay.svelte';
 	import ResponsiveVis from '$lib/viz/ResponsiveVis.svelte';
 
 	import CircleMap from '$lib/viz/CircleMap.svelte';
@@ -83,13 +84,15 @@
 	// 	}
 	// }
 
-	// create landscape overlay + export button
-	// const landscape = viewLandscape(vis);
-	// createExportButton(landscape);
-	// createLandscapeOverlay(landscape);
+	let viewLandscape, landscapeOverlay;
+	$: viewLandscape, landscapeOverlay;
 </script>
 
 <!-- <slot /> -->
-<StatusBar {width} {height} />
+<StatusBar {width} {height} bind:landscapeOverlay />
 
-<ResponsiveVis {data} {params} bind:width bind:height />
+<ResponsiveVis {data} {params} bind:width bind:height bind:viewLandscape>
+	{#if viewLandscape && landscapeOverlay}
+		<ViewLandscapeOverlay {viewLandscape} />
+	{/if}
+</ResponsiveVis>
