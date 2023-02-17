@@ -20,7 +20,7 @@
 		margin: 5px 0;
 	}
 	#header {
-		background-color: rgb(247, 247, 210);
+		background-image: linear-gradient(to right, #bebada, #8dd3c7, #ffffb3);
 		display: block;
 		padding: 10px;
 	}
