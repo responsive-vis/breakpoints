@@ -1,13 +1,12 @@
 <script>
 	import * as d3 from 'd3';
 
-	import * as data from '/src/data/world_with_continent.json';
+	import * as data from '$lib/data/world-population/world_with_continent.json';
+	import CircleMap from '$lib/components/CircleMap.svelte';
 
-	import StatusBar from '$lib/viz/StatusBar.svelte';
-	import ViewLandscapeOverlay from '$lib/ViewLandscapeOverlay.svelte';
-	import ResponsiveVis from '$lib/viz/ResponsiveVis.svelte';
-
-	import CircleMap from '$lib/viz/CircleMap.svelte';
+	import StatusBar from '$lib/components/StatusBar.svelte';
+	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
+	import ResponsiveVis from '$lib/components/ResponsiveVis.svelte';
 
 	export let width, height;
 	$: width;
