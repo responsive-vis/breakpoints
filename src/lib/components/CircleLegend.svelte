@@ -21,7 +21,7 @@
 	const top = anchorY == 'top' ? y : anchorY == 'bottom' ? y - 2 * scale(max) : y - scale(max);
 </script>
 
-<g transform={`translate(${[left, top]})`} stroke-width="{1 / s}px">
+<g transform="translate({left}, {top})" stroke-width="{1 / s}px">
 	{#each ticks as d, i}
 		<circle fill="none" stroke={color} cx={scale(max)} cy={scale(d)} r={scale(d)} />
 		<line
@@ -33,7 +33,6 @@
 			y2={scale(d) * 2}
 		/>
 		<text
-			font-family="'Helvetica Neue', sans-serif"
 			font-size={12 / s}
 			dominant-baseline="central"
 			x={tickSize + scale(max) * 2}

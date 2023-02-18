@@ -6,7 +6,8 @@
 	<h1>Data-driven Breakpoints for Responsive Visualization</h1>
 	<nav>
 		<a href="{base}/">about</a> //
-		<a href="{base}/demos/population-map">population map</a>
+		<a href="{base}/demos/population-map">population map</a> /
+		<a href="{base}/demos/uk-election">uk election</a>
 	</nav>
 </div>
 

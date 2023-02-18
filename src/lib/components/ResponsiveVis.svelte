@@ -16,17 +16,17 @@
 	$: conditions;
 	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
-	let calculateConditions = Array(params.viewStates.length).fill(undefined);
-	$: calculateConditions;
-	// $: console.log(calculateConditions);
+	let checkConditions = Array(params.viewStates.length).fill(undefined);
+	$: checkConditions;
+	// $: console.log(checkConditions);
 	$: viewLandscape;
 	// $: console.log(viewLandscape);
 
-	$: if (calculateConditions.every(Boolean)) {
+	$: if (checkConditions.every(Boolean)) {
 		viewLandscape = range(params.maxSize.w).map((x) => {
 			return range(params.maxSize.h).map((y) => {
 				for (let i = 0; i < params.viewStates.length; i++) {
-					if (calculateConditions[i](x, y)) {
+					if (checkConditions[i](x, y)) {
 						return i;
 					}
 				}
@@ -57,7 +57,7 @@
 						maxHeight: params.maxSize.h
 					}}
 					bind:conditions={conditions[i]}
-					bind:calculateConditions={calculateConditions[i]}
+					bind:checkConditions={checkConditions[i]}
 					display={display == i}
 				/>
 			{/each}
