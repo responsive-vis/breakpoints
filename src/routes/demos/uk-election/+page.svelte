@@ -96,6 +96,7 @@
 			{ type: WaffleChart, params: { colorScale } }
 		],
 		initSize: { w: 700, h: 700 },
+		maxSize: { w: 1000, h: 700 },
 		minSize: { w: 150, h: 150 },
 
 		// map: data[0],
@@ -115,10 +116,10 @@
 	$: viewLandscape, landscapeOverlay;
 </script>
 
-<StatusBar {width} {height} bind:landscapeOverlay />
+<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
 
 <ResponsiveVis {data} {params} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
-		<ViewLandscapeOverlay {viewLandscape} />
+		<ViewLandscapeOverlay {viewLandscape} width={params.maxSize.w} height={params.maxSize.h} />
 	{/if}
 </ResponsiveVis>

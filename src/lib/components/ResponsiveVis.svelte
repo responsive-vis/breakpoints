@@ -1,11 +1,12 @@
 <script>
-	import { range } from 'd3';
+	import { range, schemeSet3 } from 'd3';
+	import { onMount } from 'svelte';
+	import { waitFor } from '$lib/helpers.js';
 
-	export let data;
-	export let params;
-	export let width;
-	export let height;
-	export let viewLandscape;
+	export let data, params, width, height, viewLandscape;
+
+	// set color scheme for view landscape
+	const vlColors = schemeSet3;
 
 	// default parameters
 	params.initSize = params.initSize ? params.initSize : { w: 600, h: 400 };
@@ -18,21 +19,44 @@
 
 	let checkConditions = Array(params.viewStates.length).fill(undefined);
 	$: checkConditions;
-	// $: console.log(checkConditions);
 	$: viewLandscape;
-	// $: console.log(viewLandscape);
 
-	$: if (checkConditions.every(Boolean)) {
-		viewLandscape = range(params.maxSize.w).map((x) => {
-			return range(params.maxSize.h).map((y) => {
-				for (let i = 0; i < params.viewStates.length; i++) {
-					if (checkConditions[i](x, y)) {
-						return i;
+	// get view landscape when things are first mounted/rendered
+	onMount(() => {
+		// make sure all conditions functions are loaded
+		waitFor((_) => checkConditions.every(Boolean)).then((_) => {
+			let arr = range(params.maxSize.w).map((x) => {
+				return range(params.maxSize.h).map((y) => {
+					for (let i = 0; i < params.viewStates.length; i++) {
+						if (checkConditions[i](x, y)) {
+							return i;
+						}
 					}
-				}
+				});
 			});
+			let w = arr.length;
+			let h = arr[0].length;
+
+			let canvas = document.createElement('canvas');
+			canvas.setAttribute('width', w);
+			canvas.setAttribute('height', h);
+
+			let c = canvas.getContext('2d');
+			for (let x = 0; x < w; x++) {
+				for (let y = 0; y < h; y++) {
+					c.fillStyle = typeof arr[x][y] == 'number' ? vlColors[arr[x][y]] : '#fff';
+					c.fillRect(x, y, 1, 1);
+				}
+			}
+
+			let dataURL = canvas.toDataURL();
+
+			viewLandscape = { data: arr, image: dataURL };
 		});
-	}
+	});
+
+	// $: if (checkConditions.every(Boolean)) {
+	// }
 </script>
 
 <div id="outer-container">

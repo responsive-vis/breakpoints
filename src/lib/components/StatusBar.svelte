@@ -1,6 +1,7 @@
 <script>
 	export let width, height;
 	export let landscapeOverlay;
+	export let viewLandscape;
 
 	$: width;
 	$: height;
@@ -12,10 +13,6 @@
 </script>
 
 <div id="controls">
-	<!-- <button id="export-landscape">Export view landscape</button><br /> -->
-	<!-- function createExportButton(landscape) {
-		d3.select('#export-landscape').on('click', () => window.open(landscape));
-	} -->
 	<em>
 		Resize the container using the handle in the botton right and watch the visualization update
 		(Chrome/Firefox only).
@@ -32,6 +29,7 @@
 	<input type="checkbox" id="show-landscape-overlay" bind:checked={landscapeOverlay} /><label
 		for="show-landscape-overlay">Show view landscape overlay</label
 	>
+	<button id="export-landscape" on:click={window.open(viewLandscape.image)}>Download as PNG</button>
 </div>
 
 <style>
