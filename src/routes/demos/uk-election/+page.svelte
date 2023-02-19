@@ -7,6 +7,7 @@
 
 	import ChoroplethMap from '$lib/components/ChoroplethMap.svelte';
 	import HexMap from '$lib/components/HexMap.svelte';
+	import WaffleChart from '$lib/components/WaffleChart.svelte';
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
@@ -91,8 +92,8 @@
 						maxAspectRatioDiff: 2
 					}
 				}
-			}
-			// { type: "wafflechart", params: {} },
+			},
+			{ type: WaffleChart, params: { colorScale } }
 		],
 		initSize: { w: 700, h: 700 },
 		minSize: { w: 150, h: 150 },

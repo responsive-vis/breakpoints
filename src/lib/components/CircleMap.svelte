@@ -1,10 +1,5 @@
 <script>
-	export let data;
-	export let params;
-	export let context;
-	export let conditions;
-	export let checkConditions;
-	export let display;
+	export let data, params, context, conditions, checkConditions, display;
 
 	$: height = context.height;
 	$: width = context.width;

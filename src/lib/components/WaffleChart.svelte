@@ -1,71 +1,64 @@
 <script>
-	// waffle chart
-	viewStates.wafflechart = function (container, params) {
-		const g = container
-			.select('#svg')
-			.append('g')
-			.attr('id', 'wafflechart')
-			.attr('class', 'viewState');
+	export let data, params, context, display;
+	export const conditions = true;
+	export const checkConditions = () => true;
 
-		const countries = ['Scotland', 'Northern Ireland', 'Wales', 'England'].map((d) => ({
-			country: d,
-			data: params.data
-				.filter((el) => el.country_name === d)
-				.sort((a, b) => a.first_party > b.first_party)
-		}));
+	$: height = context.height;
+	$: width = context.width;
+	$: display;
 
-		const n_categories = countries.length;
-		const n_datapoints = params.data.length;
+	const results = data.results;
 
-		let country = g.selectAll('g').data(countries).enter().append('g');
+	const countries = ['Scotland', 'Northern Ireland', 'Wales', 'England'].map((d) => ({
+		country: d,
+		data: results
+			.filter((el) => el.country_name === d)
+			.sort((a, b) => a.first_party > b.first_party)
+	}));
 
-		let headers = country.append('text').text((d) => d.country);
+	const n_categories = countries.length;
+	const n_datapoints = results.length;
 
-		let squares = country
-			.selectAll('rect')
-			.data((d) => d.data)
-			.enter()
-			.append('rect')
-			.attr('fill', (d) => params.colorScale(d.first_party));
-
-		function partsSums(ls) {
-			let sum = 0;
-			let res = [0];
-			for (let i = 1; i <= ls.length; i++) {
-				sum += ls[i - 1];
-				res.push(sum);
-			}
-			return res;
+	function partsSums(ls) {
+		let sum = 0;
+		let res = [0];
+		for (let i = 1; i <= ls.length; i++) {
+			sum += ls[i - 1];
+			res.push(sum);
 		}
+		return res;
+	}
 
-		const adapt = function (e) {
-			// compute new sizes/grid
-			let label = 30; // could update this step-wise?
-			let margin = 5;
-			let w = e.x - margin * 2;
-			let h = e.y - label * n_categories - margin * 2; // 20px for each header, 5px *2 for margins
-			let size = Math.floor(Math.sqrt(((w * h) / n_datapoints) * 0.7)); // spare space
-			let padding = Math.ceil(size * 0.15);
-			let wn = Math.floor(w / (size + padding));
+	// Layout
+	let label = 30; // could update this step-wise?
+	let margin = 5;
 
-			let translate = partsSums(countries.map((d) => (d.data.length / wn) * (size + padding)));
+	let w, h, size, padding, wn, translate;
+	$: w = width - margin * 2;
+	$: h = height - label * n_categories - margin * 2; // 20px for each header, 5px *2 for margins
+	$: size = Math.floor(Math.sqrt(((w * h) / n_datapoints) * 0.7)); // spare space
+	$: padding = Math.ceil(size * 0.15);
+	$: wn = Math.floor(w / (size + padding));
+	$: translate = partsSums(countries.map((d) => (d.data.length / wn) * (size + padding)));
 
-			// update chart
-			country.attr('transform', (d, i) => `translate(5,${translate[i] + (i + 1) * label})`);
-			headers.attr('font-size', label / 2).attr('y', -0.13 * label);
-			squares
-				// .transition()
-				// .duration(50)
-				.attr('width', size)
-				.attr('height', size)
-				.attr('x', (d, i) => (i % wn) * (size + padding))
-				.attr('y', (d, i) => Math.floor(i / wn) * (size + padding));
-		};
-
-		const conditions = function () {
-			return true;
-		};
-
-		return { adapt: adapt, conditions: conditions };
-	};
+	// no conditions for now
 </script>
+
+{#if display}
+	<g id="wafflechart" class="viewState">
+		{#each countries as country, i}
+			<g transform="translate(5,{translate[i] + (i + 1) * label})">
+				<text font-size={label / 2} y={-0.13 * label}>{country.country}</text>
+				{#each country.data as item, j}
+					<rect
+						width={size}
+						height={size}
+						x={(j % wn) * (size + padding)}
+						y={Math.floor(j / wn) * (size + padding)}
+						fill={params.colorScale(item.first_party)}
+					/>
+				{/each}
+			</g>
+		{/each}
+	</g>
+{/if}
