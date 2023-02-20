@@ -1,10 +1,11 @@
 <script>
-	export let viewLandscape, width, height;
+	export let viewLandscape;
 </script>
 
 <div
 	id="landscape-overlay"
-	style="width:{width}px; height:{height}px; background-image: url({viewLandscape.image})"
+	style="width:{viewLandscape.size[0]}px; height:{viewLandscape
+		.size[1]}px; background-image: url({viewLandscape.image})"
 />
 
 <style>

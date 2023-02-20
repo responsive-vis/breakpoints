@@ -59,12 +59,14 @@
 
 	let colorScale = d3.scaleOrdinal().domain(categories).range(colors);
 
-	let data = { map, hex, results };
-
-	let params = {
+	let spec = {
+		initSize: { w: 700, h: 700 },
+		maxSize: { w: 1000, h: 700 },
+		minSize: { w: 150, h: 150 },
 		viewStates: [
 			{
 				type: ChoroplethMap,
+				data: { map, results },
 				params: {
 					colors: colors,
 					category_labels: category_labels,
@@ -82,6 +84,7 @@
 			},
 			{
 				type: HexMap,
+				data: { hex, results },
 				params: {
 					colors: colors,
 					category_labels: category_labels,
@@ -93,24 +96,22 @@
 					}
 				}
 			},
-			{ type: WaffleChart, params: { colorScale } }
-		],
-		initSize: { w: 700, h: 700 },
-		maxSize: { w: 1000, h: 700 },
-		minSize: { w: 150, h: 150 },
-
-		// map: data[0],
-		// hex: data[1],
-		// data: data[2],
-		categories: categories,
-
-		collection: 'merged',
-
-		hex_id: (d) => d.key
-
-		// values: (d) => (d ? d.pct_rmn - d.pct_lev : undefined),
-		// name: (feature) => feature.properties.HBName,
+			{
+				type: WaffleChart,
+				data: { results },
+				params: { colorScale }
+			}
+		]
 	};
+
+	// map: data[0],
+	// hex: data[1],
+	// data: data[2],
+	// categories: categories,
+	// collection: 'merged',
+	// hex_id: (d) => d.key
+	// values: (d) => (d ? d.pct_rmn - d.pct_lev : undefined),
+	// name: (feature) => feature.properties.HBName,
 
 	let viewLandscape, landscapeOverlay;
 	$: viewLandscape, landscapeOverlay;
@@ -118,8 +119,8 @@
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
 
-<ResponsiveVis {data} {params} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
-		<ViewLandscapeOverlay {viewLandscape} width={params.maxSize.w} height={params.maxSize.h} />
+		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}
 </ResponsiveVis>

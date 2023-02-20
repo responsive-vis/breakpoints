@@ -7,6 +7,8 @@
 	$: width = context.width;
 	$: display;
 
+	let spec = context.spec;
+
 	const results = data.results;
 
 	const countries = ['Scotland', 'Northern Ireland', 'Wales', 'England'].map((d) => ({
@@ -45,20 +47,22 @@
 </script>
 
 {#if display}
-	<g id="wafflechart" class="viewState">
-		{#each countries as country, i}
-			<g transform="translate(5,{translate[i] + (i + 1) * label})">
-				<text font-size={label / 2} y={-0.13 * label}>{country.country}</text>
-				{#each country.data as item, j}
-					<rect
-						width={size}
-						height={size}
-						x={(j % wn) * (size + padding)}
-						y={Math.floor(j / wn) * (size + padding)}
-						fill={params.colorScale(item.first_party)}
-					/>
-				{/each}
-			</g>
-		{/each}
-	</g>
+	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+		<g id="wafflechart" class="viewState">
+			{#each countries as country, i}
+				<g transform="translate(5,{translate[i] + (i + 1) * label})">
+					<text font-size={label / 2} y={-0.13 * label}>{country.country}</text>
+					{#each country.data as item, j}
+						<rect
+							width={size}
+							height={size}
+							x={(j % wn) * (size + padding)}
+							y={Math.floor(j / wn) * (size + padding)}
+							fill={params.colorScale(item.first_party)}
+						/>
+					{/each}
+				</g>
+			{/each}
+		</g></svg
+	>
 {/if}

@@ -1,16 +1,19 @@
 <script>
-	export let data, params, context, conditions, checkConditions, display;
+	export let data, params, context; // provided by responsive vis component
+	export let conditions, checkConditions, display; // exported for use in responsive vis component
 
 	import * as d3 from 'd3';
 	import * as topojson from 'topojson-client';
 
 	import { fitRect, getAreaSize } from '$lib/helpers.js';
 	import FillLegend from '$lib/components/FillLegend.svelte';
-	import Tooltip from '$lib/components/Tooltip.svelte';
+	// import Tooltip from '$lib/components/Tooltip.svelte';
 
 	$: height = context.height;
 	$: width = context.width;
 	$: display;
+
+	const spec = context.spec;
 
 	const topo = data.map;
 	const results = data.results;
@@ -73,40 +76,42 @@
 
 <!-- only display if this view state is selected -->
 {#if display}
-	<g
-		id="choropleth"
-		class="viewState"
-		transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
-	>
-		<g id="polygons">
-			{#each geo.features as feature}
+	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+		<g
+			id="choropleth"
+			class="viewState"
+			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
+		>
+			<g id="polygons">
+				{#each geo.features as feature}
+					<path
+						class="area"
+						id={params.map_id(feature)}
+						d={path(feature)}
+						fill={params.colorScale(
+							results.find((x) => x.ons_id === feature.properties.id).first_party
+						)}
+					/>
+				{/each}
+			</g>
+			<g id="mesh">
 				<path
-					class="area"
-					id={params.map_id(feature)}
-					d={path(feature)}
-					fill={params.colorScale(
-						results.find((x) => x.ons_id === feature.properties.id).first_party
-					)}
+					class="mapMesh"
+					d={path(mesh)}
+					fill="transparent"
+					stroke="#fff"
+					stroke-width="{0.5 / s}px"
 				/>
-			{/each}
-		</g>
-		<g id="mesh">
-			<path
-				class="mapMesh"
-				d={path(mesh)}
-				fill="transparent"
-				stroke="#fff"
-				stroke-width="{0.5 / s}px"
+			</g>
+			<FillLegend
+				colors={params.colors}
+				labels={params.category_labels}
+				title={params.title}
+				x={initW}
+				y="70"
+				anchorX="right"
+				{s}
 			/>
-		</g>
-		<FillLegend
-			colors={params.colors}
-			labels={params.category_labels}
-			title={params.title}
-			x={initW}
-			y="70"
-			anchorX="right"
-			{s}
-		/>
-	</g>
+		</g></svg
+	>
 {/if}

@@ -3,21 +3,22 @@
 	import { onMount } from 'svelte';
 	import { waitFor } from '$lib/helpers.js';
 
-	export let data, params, width, height, viewLandscape;
+	export let spec; // must be provided and contains data and parameters for each view state
+	export let width, height, viewLandscape; // can optionally be used on the page via e.g. bind:width={...}
 
 	// set color scheme for view landscape
 	const vlColors = schemeSet3;
 
 	// default parameters
-	params.initSize = params.initSize ? params.initSize : { w: 600, h: 400 };
-	params.maxSize = params.maxSize ? params.maxSize : { w: 1000, h: 700 };
-	params.minSize = params.minSize ? params.minSize : { w: 50, h: 50 };
+	spec.initSize = spec.initSize ? spec.initSize : { w: 600, h: 400 };
+	spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
+	spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
 
-	let conditions = Array(params.viewStates.length).fill(true); // intialise array with TRUE for each view state
+	let conditions = Array(spec.viewStates.length).fill(true); // intialise array with TRUE for each view state
 	$: conditions;
 	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
-	let checkConditions = Array(params.viewStates.length).fill(undefined);
+	let checkConditions = Array(spec.viewStates.length).fill(undefined);
 	$: checkConditions;
 	$: viewLandscape;
 
@@ -25,18 +26,21 @@
 	onMount(() => {
 		// make sure all conditions functions are loaded
 		waitFor((_) => checkConditions.every(Boolean)).then((_) => {
-			let arr = range(params.maxSize.w).map((x) => {
-				return range(params.maxSize.h).map((y) => {
-					for (let i = 0; i < params.viewStates.length; i++) {
+			let w = spec.maxSize.w;
+			let h = spec.maxSize.h;
+
+			// get an array of max width by max height that records which view state is displayed at each size
+			let arr = range(spec.maxSize.w).map((x) => {
+				return range(spec.maxSize.h).map((y) => {
+					for (let i = 0; i < spec.viewStates.length; i++) {
 						if (checkConditions[i](x, y)) {
 							return i;
 						}
 					}
 				});
 			});
-			let w = arr.length;
-			let h = arr[0].length;
 
+			// draw this array on a canvas
 			let canvas = document.createElement('canvas');
 			canvas.setAttribute('width', w);
 			canvas.setAttribute('height', h);
@@ -51,41 +55,35 @@
 
 			let dataURL = canvas.toDataURL();
 
-			viewLandscape = { data: arr, image: dataURL };
+			viewLandscape = { data: arr, image: dataURL, size: [w, h] };
 		});
 	});
-
-	// $: if (checkConditions.every(Boolean)) {
-	// }
 </script>
 
 <div id="outer-container">
 	<div
 		id="container"
-		style="width:{params.initSize.w}px; height:{params.initSize.h}px; max-width:{params.maxSize
-			.w}px; max-height:{params.maxSize.h}px; min-width:{params.minSize.w}px; min-height:{params
-			.minSize.h}px"
+		style="width:{spec.initSize.w}px; height:{spec.initSize.h}px; max-width:{spec.maxSize
+			.w}px; max-height:{spec.maxSize.h}px; min-width:{spec.minSize.w}px; min-height:{spec.minSize
+			.h}px"
 		bind:offsetWidth={width}
 		bind:offsetHeight={height}
 	>
-		<svg width={params.maxSize.w} height={params.maxSize.h} id="svg">
-			{#each params.viewStates as viewState, i}
-				<svelte:component
-					this={viewState.type}
-					{data}
-					params={viewState.params}
-					context={{
-						width: width,
-						height: height,
-						maxWidth: params.maxSize.w,
-						maxHeight: params.maxSize.h
-					}}
-					bind:conditions={conditions[i]}
-					bind:checkConditions={checkConditions[i]}
-					display={display == i}
-				/>
-			{/each}
-		</svg>
+		{#each spec.viewStates as viewState, i}
+			<svelte:component
+				this={viewState.type}
+				data={viewState.data}
+				params={viewState.params}
+				context={{
+					width,
+					height,
+					spec
+				}}
+				bind:conditions={conditions[i]}
+				bind:checkConditions={checkConditions[i]}
+				display={display == i}
+			/>
+		{/each}
 	</div>
 	<!-- for optional overlay -->
 	<slot />

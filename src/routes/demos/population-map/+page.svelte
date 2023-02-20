@@ -37,12 +37,13 @@
 	const legendTickFormat = (d) => legend[d];
 	const legendTickValues = Object.keys(legend);
 
-	let params = {
+	let spec = {
 		initSize: { w: 1000, h: 600 },
 		maxSize: { w: 1000, h: 700 },
 		viewStates: [
 			{
-				type: CircleMap,
+				type: CircleMap, // configured as proportional circle map
+				data,
 				params: {
 					title: 'World Population by Country',
 					projection: d3.geoEqualEarth().rotate([-20, 0, 0]),
@@ -56,7 +57,8 @@
 				}
 			},
 			{
-				type: CircleMap,
+				type: CircleMap, // configured as Dorling
+				data,
 				params: {
 					title: 'World Population by Country',
 					dorling: true,
@@ -90,7 +92,7 @@
 <!-- <slot /> -->
 <StatusBar {width} {height} bind:landscapeOverlay />
 
-<ResponsiveVis {data} {params} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}

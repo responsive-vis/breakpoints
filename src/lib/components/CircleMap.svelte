@@ -1,5 +1,6 @@
 <script>
-	export let data, params, context, conditions, checkConditions, display;
+	export let data, params, context; // provided by responsive vis component
+	export let conditions, checkConditions, display; // exported for use in responsive vis component
 
 	$: height = context.height;
 	$: width = context.width;
@@ -11,6 +12,8 @@
 	import CircleLegend from '$lib/components/CircleLegend.svelte';
 
 	let map, circles;
+
+	let spec = context.spec;
 
 	// fit projection to container + geo data
 	const initW = 500;
@@ -83,7 +86,6 @@
 	// calculate some things for conditions
 	const pop_vals = data.features.map((d) => d.properties.POP_EST);
 	const lower_bound = pop_vals.sort((a, b) => a - b)[Math.floor(pop_vals.length * 0.1)];
-	$: containerAR = width / height;
 
 	checkConditions = function (w, h) {
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
@@ -100,54 +102,56 @@
 
 <!-- only display if this view state is selected -->
 {#if display}
-	<g
-		class="circleMap viewState"
-		transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
+	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+		<g
+			class="circleMap viewState"
+			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
+		>
+			<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
+			<g id="map" bind:this={map}>
+				{#each data.features as feature}
+					<path
+						class="country"
+						id={feature.properties.ISO_A3}
+						d={path(feature)}
+						fill="#f5f5f5"
+						stroke="#e0e0e0"
+						stroke-width="{0.7 / s}px"
+					/>
+				{/each}
+			</g>
+			<g id="circles" bind:this={circles}>
+				{#each data.features as feature}
+					<circle
+						r={r(feature.properties.POP_EST)}
+						cx={params.dorling
+							? feature.properties.dorlingX
+							: projection(feature.properties.centroid)[0]}
+						cy={params.dorling
+							? feature.properties.dorlingY
+							: projection(feature.properties.centroid)[1]}
+						fill={params.circleColor(feature)}
+						stroke={params.circleColor(feature)}
+						fill-opacity="0.4"
+						stroke-width="{1 / s}px"
+						on:focus={(e) => handleMouseover(e, feature)}
+						on:mouseover={(e) => handleMouseover(e, feature)}
+						on:mouseout={handleMouseout}
+						on:blur={handleMouseout}
+					/>
+				{/each}
+			</g>
+			<CircleLegend
+				x={5 + bounds[0][0]}
+				y={mapInitSize.height + bounds[0][1] - 5}
+				anchorX="left"
+				anchorY="bottom"
+				scale={r}
+				tickValues={params.legendTickValues}
+				tickFormat={params.legendTickFormat}
+				{s}
+			/>
+			<Tooltip bind:x bind:y bind:content fontsize={12 / s} />
+		</g></svg
 	>
-		<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
-		<g id="map" bind:this={map}>
-			{#each data.features as feature}
-				<path
-					class="country"
-					id={feature.properties.ISO_A3}
-					d={path(feature)}
-					fill="#f5f5f5"
-					stroke="#e0e0e0"
-					stroke-width="{0.7 / s}px"
-				/>
-			{/each}
-		</g>
-		<g id="circles" bind:this={circles}>
-			{#each data.features as feature}
-				<circle
-					r={r(feature.properties.POP_EST)}
-					cx={params.dorling
-						? feature.properties.dorlingX
-						: projection(feature.properties.centroid)[0]}
-					cy={params.dorling
-						? feature.properties.dorlingY
-						: projection(feature.properties.centroid)[1]}
-					fill={params.circleColor(feature)}
-					stroke={params.circleColor(feature)}
-					fill-opacity="0.4"
-					stroke-width="{1 / s}px"
-					on:focus={(e) => handleMouseover(e, feature)}
-					on:mouseover={(e) => handleMouseover(e, feature)}
-					on:mouseout={handleMouseout}
-					on:blur={handleMouseout}
-				/>
-			{/each}
-		</g>
-		<CircleLegend
-			x={5 + bounds[0][0]}
-			y={mapInitSize.height + bounds[0][1] - 5}
-			anchorX="left"
-			anchorY="bottom"
-			scale={r}
-			tickValues={params.legendTickValues}
-			tickFormat={params.legendTickFormat}
-			{s}
-		/>
-		<Tooltip bind:x bind:y bind:content fontsize={12 / s} />
-	</g>
 {/if}
