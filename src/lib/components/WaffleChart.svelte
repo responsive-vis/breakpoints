@@ -1,7 +1,7 @@
 <script>
-	export let data, params, context, display;
-	export const conditions = true;
-	export const checkConditions = () => true;
+	export let data, params, conditions; // provided by responsive vis component from spec
+	export let context, display; // provided by responsive vis component
+	export const checkConditions = () => true; // exported for use in responsive vis component
 
 	$: height = context.height;
 	$: width = context.width;

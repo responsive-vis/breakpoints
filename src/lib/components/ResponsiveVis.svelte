@@ -14,13 +14,15 @@
 	spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
 	spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
 
-	let conditions = Array(spec.viewStates.length).fill(true); // intialise array with TRUE for each view state
-	$: conditions;
-	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
-
 	let checkConditions = Array(spec.viewStates.length).fill(undefined);
 	$: checkConditions;
 	$: viewLandscape;
+
+	let conditions = Array(spec.viewStates.length).fill(true); // intialise array with TRUE for each view state
+	$: conditions = conditions.map((d, i) => {
+		return typeof checkConditions[i] === 'function' ? checkConditions[i](width, height) : true;
+	});
+	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
 	// get view landscape when things are first mounted/rendered
 	onMount(() => {
@@ -74,14 +76,14 @@
 				this={viewState.type}
 				data={viewState.data}
 				params={viewState.params}
+				conditions={viewState.conditions}
 				context={{
 					width,
 					height,
 					spec
 				}}
-				bind:conditions={conditions[i]}
+				display={display === i}
 				bind:checkConditions={checkConditions[i]}
-				display={display == i}
 			/>
 		{/each}
 	</div>

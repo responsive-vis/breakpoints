@@ -11,12 +11,12 @@
 </script>
 
 <script>
+	export let data, params, conditions; // provided by responsive vis component from spec
+	export let context, display; // provided by responsive vis component
+	export let checkConditions; // exported for use in responsive vis component
+
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-
-	// export let data // not used for this component; data is included in params
-	export let params, context; // provided by responsive vis component
-	export let conditions, checkConditions, display; // exported for use in responsive vis component
 
 	$: height = context.height;
 	$: width = context.width;
@@ -37,7 +37,6 @@
 	});
 
 	checkConditions = (w, h) => true;
-	$: conditions = checkConditions(width, height);
 </script>
 
 <svelte:head>

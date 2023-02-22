@@ -97,7 +97,8 @@
 			{
 				type: NetPanorama,
 				data: null, // data is included in params
-				params: networkSpec1
+				params: networkSpec1,
+				conditions: {}
 			}
 		]
 	};

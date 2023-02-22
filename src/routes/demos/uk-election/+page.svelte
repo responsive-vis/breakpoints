@@ -75,11 +75,11 @@
 					map_id: (d) => d.properties.id,
 					data_id: (d) => d.ons_id,
 					colorScale: colorScale,
-					values: (d) => d.first_party,
-					conditions: {
-						minAreaSize: 2,
-						maxAspectRatioDiff: 2
-					}
+					values: (d) => d.first_party
+				},
+				conditions: {
+					minAreaSize: 2,
+					maxAspectRatioDiff: 2
 				}
 			},
 			{
@@ -89,17 +89,18 @@
 					colors: colors,
 					category_labels: category_labels,
 					title: 'UK General Election 2019',
-					colorScale: colorScale,
-					conditions: {
-						minHexSize: 5,
-						maxAspectRatioDiff: 2
-					}
+					colorScale: colorScale
+				},
+				conditions: {
+					minHexSize: 5,
+					maxAspectRatioDiff: 2
 				}
 			},
 			{
 				type: WaffleChart,
 				data: { results },
-				params: { colorScale }
+				params: { colorScale },
+				conditions: {}
 			}
 		]
 	};

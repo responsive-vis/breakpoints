@@ -1,6 +1,7 @@
 <script>
-	export let data, params, context; // provided by responsive vis component
-	export let conditions, checkConditions, display; // exported for use in responsive vis component
+	export let data, params, conditions; // provided by responsive vis component from spec
+	export let context, display; // provided by responsive vis component
+	export let checkConditions; // exported for use in responsive vis component
 
 	$: height = context.height;
 	$: width = context.width;
@@ -90,14 +91,11 @@
 	checkConditions = function (w, h) {
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
 		return (
-			r(lower_bound) * s > params.conditions.minCircleRadius && // min r - at least 90% of circles visible
-			w / h / mapAR >= 1 / params.conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
-			w / h / mapAR <= params.conditions.maxAspectRatioDiff
+			r(lower_bound) * s > conditions.minCircleRadius && // min r - at least 90% of circles visible
+			w / h / mapAR >= 1 / conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
+			w / h / mapAR <= conditions.maxAspectRatioDiff
 		);
 	};
-
-	// should remove this and move into RV component
-	$: conditions = checkConditions(width, height);
 </script>
 
 <!-- only display if this view state is selected -->

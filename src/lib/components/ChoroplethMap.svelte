@@ -1,6 +1,7 @@
 <script>
-	export let data, params, context; // provided by responsive vis component
-	export let conditions, checkConditions, display; // exported for use in responsive vis component
+	export let data, params, conditions; // provided by responsive vis component from spec
+	export let context, display; // provided by responsive vis component
+	export let checkConditions; // exported for use in responsive vis component
 
 	import * as d3 from 'd3';
 	import * as topojson from 'topojson-client';
@@ -47,9 +48,7 @@
 
 	// get smallest area
 	let filterFunc =
-		typeof params.conditions.minAreaFilter === 'function'
-			? params.conditions.minAreaFilter
-			: (d) => true;
+		typeof conditions.minAreaFilter === 'function' ? conditions.minAreaFilter : (d) => true;
 	const minArea = d3.min(geo.features.filter(filterFunc), (d) => d.area);
 
 	// compute scale and translate
@@ -63,15 +62,12 @@
 		let ar = w / h; // aspect ratio of container
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
 		return (
-			minArea * Math.pow(s, 2) > params.conditions.minAreaSize &&
+			minArea * Math.pow(s, 2) > conditions.minAreaSize &&
 			// aspect ratio difference
-			ar / mapAR >= 1 / params.conditions.maxAspectRatioDiff &&
-			ar / mapAR <= params.conditions.maxAspectRatioDiff
+			ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
+			ar / mapAR <= conditions.maxAspectRatioDiff
 		);
 	};
-
-	// should remove this and move into RV component
-	$: conditions = checkConditions(width, height);
 </script>
 
 <!-- only display if this view state is selected -->

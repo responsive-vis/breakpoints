@@ -1,6 +1,7 @@
 <script>
-	export let data, params, context; // provided by responsive vis component
-	export let conditions, checkConditions, display; // exported for use in responsive vis component
+	export let data, params, conditions; // provided by responsive vis component from spec
+	export let context, display; // provided by responsive vis component
+	export let checkConditions; // exported for use in responsive vis component
 
 	import * as d3 from 'd3';
 	import { renderHexJSON } from 'd3-hexjson';
@@ -56,15 +57,12 @@
 		const ar = w / h;
 		const s = hexAR > w / h ? w / hexInitSize.w : h / hexInitSize.h;
 		return (
-			hexWidth * s > params.conditions.minHexSize &&
+			hexWidth * s > conditions.minHexSize &&
 			// aspect ratio difference
-			ar / hexAR >= 1 / params.conditions.maxAspectRatioDiff &&
-			ar / hexAR <= params.conditions.maxAspectRatioDiff
+			ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
+			ar / hexAR <= conditions.maxAspectRatioDiff
 		);
 	};
-
-	// should remove this and move into RV component
-	$: conditions = checkConditions(width, height);
 </script>
 
 <!-- only display if this view state is selected -->

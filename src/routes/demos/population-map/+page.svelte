@@ -49,11 +49,11 @@
 					projection: d3.geoEqualEarth().rotate([-20, 0, 0]),
 					circleColor: circleColor,
 					legendTickValues: legendTickValues,
-					legendTickFormat: legendTickFormat,
-					conditions: {
-						minCircleRadius: 1,
-						maxAspectRatioDiff: 1.5
-					}
+					legendTickFormat: legendTickFormat
+				},
+				conditions: {
+					minCircleRadius: 1,
+					maxAspectRatioDiff: 1.5
 				}
 			},
 			{
@@ -65,12 +65,11 @@
 					projection: d3.geoEqualEarth().rotate([-20, 0, 0]),
 					circleColor: circleColor,
 					legendTickValues: legendTickValues,
-					legendTickFormat: legendTickFormat,
-					// legendPosLeft: 460,
-					conditions: {
-						minCircleRadius: 1,
-						maxAspectRatioDiff: 1.5
-					}
+					legendTickFormat: legendTickFormat
+				},
+				conditions: {
+					minCircleRadius: 1,
+					maxAspectRatioDiff: 1.5
 				}
 			}
 		]
