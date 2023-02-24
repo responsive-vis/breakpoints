@@ -37,6 +37,11 @@ const getAreaSize = function (feature, path) {
 	}
 };
 
+const dist = function (p1, p2) {
+	// Find the distance between two points (Pythagoras)
+	return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+};
+
 const waitFor = function (conditionFunction) {
 	const poll = (resolve) => {
 		if (conditionFunction()) resolve();
@@ -45,4 +50,4 @@ const waitFor = function (conditionFunction) {
 	return new Promise(poll);
 };
 
-export { fitRect, getAreaSize, waitFor };
+export { fitRect, getAreaSize, dist, waitFor };
