@@ -13,64 +13,58 @@
 	$: width = context.width;
 
 	// size of 'data rectangle' of chart (allow space for axes)
-	$: data_width = width - 50;
-	$: data_height = height - 50;
 
 	// CONDITIONS
 	// compute overplotting
-	const ratings = data.default
-		.map((d) => {
-			return [d['Rotten Tomatoes Rating'], d['IMDB Rating']];
-		}) // get ratings
-		.filter((d) => d[0] !== null && d[1] !== null); // filter out instances where at least one of them is null
-	const radius = 3.09; // default size of vega-lite circle is 30, i.e. radius of 3.09
+	if (conditions.maxOverplotting) {
+		const ratings = data.default
+			.map((d) => {
+				return [d['Rotten Tomatoes Rating'], d['IMDB Rating']];
+			}) // get ratings
+			.filter((d) => d[0] !== null && d[1] !== null); // filter out instances where at least one of them is null
+		const radius = 3.09; // default size of vega-lite circle is 30, i.e. radius of 3.09
 
-	function computeOverplotting(pos, r, w, h) {
-		// recreate scales used internally in vega
-		let x = scaleLinear().domain([0, 10]).range([0, w]);
-		let y = scaleLinear().domain([0, 100]).range([0, h]);
+		function computeOverplotting(pos, r, w, h) {
+			// recreate scales used internally in vega
+			let x = scaleLinear().domain([0, 10]).range([0, w]);
+			let y = scaleLinear().domain([0, 100]).range([0, h]);
 
-		// apply scales
-		let positions = pos.map((d) => {
-			return [x(d[0]), y(d[1])];
-		});
-		let overplotting = 0;
-		let total = 0;
-		// for each complete data point, check how many others it overlaps with
-		for (let i = 0; i < positions.length; i++) {
-			// check only starting at the current index so we don't overcount
-			// +1 to skip itself
-			for (let j = i + 1; j < positions.length; j++) {
-				// get distance between the two points at i and j
-				let d = dist(positions[i], positions[j]);
+			// apply scales
+			let positions = pos.map((d) => {
+				return [x(d[0]), y(d[1])];
+			});
+			let overplotting = 0;
+			let total = 0;
+			// for each complete data point, check how many others it overlaps with
+			for (let i = 0; i < positions.length; i++) {
+				// check only starting at the current index so we don't overcount
+				// +1 to skip itself
+				for (let j = i + 1; j < positions.length; j++) {
+					// get distance between the two points at i and j
+					let d = dist(positions[i], positions[j]);
 
-				// get value between 0 and 1 for amount of overlap
-				// 1 = identical positions; 0 = no overlap
-				let overlap = d < 2 * r ? (2 * r - d) / (2 * r) : 0;
-				overplotting += overlap;
-				total += 1;
+					// get value between 0 and 1 for amount of overlap
+					// 1 = identical positions; 0 = no overlap
+					let overlap = d < 2 * r ? (2 * r - d) / (2 * r) : 0;
+					overplotting += overlap;
+					total += 1;
+				}
 			}
+			return overplotting / total;
 		}
-		return overplotting / total;
 	}
-
-	// console.log(ratings);
-
-	// console.log(x, y);
-
-	// console.log(positions);
-
-	// console.log(overplotting);
-
 	///////////
 
 	let options = { renderer: 'svg' };
 
 	$: spec = {
-		...params,
-		padding: { left: 5, right: 5, top: 5, bottom: 5 },
-		width: data_width,
-		height: data_height
+		...params.spec,
+		width: width - 20,
+		height: height - 20,
+		autosize: 'fit',
+		...(typeof params.filter === 'function' && {
+			transform: [{ filter: params.filter(width, height) }]
+		})
 	};
 
 	$: display;
@@ -82,15 +76,16 @@
 		let c1 = conditions.maxOverplotting
 			? computeOverplotting(ratings, radius, w - 500, h - 500) < conditions.maxOverplotting
 			: true;
-		let c2 = conditions.minWidth ? width > conditions.minWidth : true;
-		return c1 && c2;
+		let c2 = conditions.minWidth ? w > conditions.minWidth : true;
+		let c3 = conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true;
+		return c1 && c2 && c3;
 	};
 </script>
 
-{#if dev}
-	{#if display}
+{#if display}
+	{#if dev}
 		<VegaLite {data} {spec} {options} />
+	{:else}
+		-- vega lite currently isn't working --
 	{/if}
-{:else}
-	-- vega lite currently isn't working --
 {/if}

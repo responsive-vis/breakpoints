@@ -16,8 +16,6 @@
 		data: {
 			name: 'default'
 		},
-		width: 700,
-		height: 700,
 		mark: 'point',
 		encoding: {
 			x: { field: 'IMDB Rating', type: 'quantitative' },
@@ -30,8 +28,6 @@
 		data: {
 			name: 'default'
 		},
-		width: 400,
-		height: 400,
 		mark: 'circle',
 		encoding: {
 			x: {
@@ -54,8 +50,6 @@
 		data: {
 			name: 'default'
 		},
-		width: 200,
-		height: 200,
 		mark: 'rect',
 		encoding: {
 			x: {
@@ -89,7 +83,7 @@
 			{
 				type: VegaLiteWrapper,
 				data,
-				params: vl_spec_scatterplot,
+				params: { spec: vl_spec_scatterplot },
 				conditions: {
 					// maxOverplotting: 0.003
 					minWidth: 700
@@ -98,7 +92,7 @@
 			{
 				type: VegaLiteWrapper,
 				data,
-				params: vl_spec_histogram_scatter,
+				params: { spec: vl_spec_histogram_scatter },
 				conditions: {
 					minWidth: 400
 				}
@@ -106,7 +100,7 @@
 			{
 				type: VegaLiteWrapper,
 				data,
-				params: vl_spec_histogram_heatmap,
+				params: { spec: vl_spec_histogram_heatmap },
 				conditions: {
 					minWidth: 50
 				}
