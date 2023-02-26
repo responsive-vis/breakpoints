@@ -3,6 +3,7 @@
 	export let context, display; // provided by responsive vis component
 	export let checkConditions; // exported for use in responsive vis component
 
+	import { dev } from '$app/environment';
 	import { VegaLite } from 'svelte-vega';
 	import { scaleLinear } from 'd3';
 	import { dist } from '$lib/helpers.js';
@@ -81,10 +82,15 @@
 		let c1 = conditions.maxOverplotting
 			? computeOverplotting(ratings, radius, w - 500, h - 500) < conditions.maxOverplotting
 			: true;
-		return c1;
+		let c2 = conditions.minWidth ? width > conditions.minWidth : true;
+		return c1 && c2;
 	};
 </script>
 
-{#if display}
-	<VegaLite {data} {spec} {options} />
+{#if dev}
+	{#if display}
+		<VegaLite {data} {spec} {options} />
+	{/if}
+{:else}
+	-- vega lite currently isn't working --
 {/if}
