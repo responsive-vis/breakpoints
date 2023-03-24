@@ -149,7 +149,7 @@
 				tickFormat={params.legendTickFormat}
 				{s}
 			/>
-			<Tooltip bind:x bind:y bind:content fontsize={12 / s} />
+			<Tooltip bind:x bind:y bind:content fontSize={12 / s} />
 		</g></svg
 	>
 {/if}

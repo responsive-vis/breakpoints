@@ -1,7 +1,9 @@
 <script>
 	export let data, params, conditions; // provided by responsive vis component from spec
 	export let context, display; // provided by responsive vis component
-	export const checkConditions = () => true; // exported for use in responsive vis component
+	export let checkConditions; // exported for use in responsive vis component
+
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	$: height = context.height;
 	$: width = context.width;
@@ -31,38 +33,100 @@
 		return res;
 	}
 
+	// width * height = total area available
+	// one square needs size+padding ^2
+	// total number of squares
+	// width-wise: width / size+padding
+	// height-wise:
+
+	// (width / size+padding) * (height / size+padding) = n_squares + 4 * (width / size+padding)
+
 	// Layout
-	let label = 30; // could update this step-wise?
-	let margin = 5;
+	let wide = params.orientation == 'horizontal'; // vertical is default
 
-	let w, h, size, padding, wn, translate;
+	let label = 22; // could update this step-wise?
+	let margin = 3;
+	let gap = 10; // gap for horizontal version
+
+	let w, h, s, row_col, translate;
 	$: w = width - margin * 2;
-	$: h = height - label * n_categories - margin * 2; // 20px for each header, 5px *2 for margins
-	$: size = Math.floor(Math.sqrt(((w * h) / n_datapoints) * 0.7)); // spare space
-	$: padding = Math.ceil(size * 0.15);
-	$: wn = Math.floor(w / (size + padding));
-	$: translate = partsSums(countries.map((d) => (d.data.length / wn) * (size + padding)));
+	$: h = wide ? height - label - margin * 2 : height - label * n_categories - margin * 2; // 20px for each header, 5px *2 for margins
+	// $: s = (Math.sqrt(w * h * n_datapoints + n_categories * Math.pow(w, 2)) - 2 * w) / n_datapoints;
+	$: s = wide
+		? Math.pow(((w * h) / n_datapoints) * 0.5, 0.56)
+		: Math.pow(((w * h) / n_datapoints) * 0.8, 0.51);
+	$: row_col = wide ? Math.floor(h / s) : Math.floor(w / s);
+	$: translate = partsSums(countries.map((d) => Math.ceil(d.data.length / row_col) * s));
 
-	// no conditions for now
+	// Tooltip
+	let x, y, content;
+	$: x, y, content;
+	function handleMouseover(event, item) {
+		x = event.layerX + 5;
+		y = event.layerY;
+		content = item.constituency_name;
+	}
+	function handleMouseout(event) {
+		x = -100;
+		y = -100;
+		content = '';
+	}
+
+	checkConditions = function (w, h) {
+		let c1 = conditions.minWidth ? w > conditions.minWidth : true;
+		let c2 = conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true;
+		let c3 = conditions.maxAspectRatio ? w / h < conditions.maxAspectRatio : true;
+		return c1 && c2 && c3;
+	};
 </script>
 
 {#if display}
 	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+		<clipPath id="rect-clip-path" />
+
 		<g id="wafflechart" class="viewState">
-			{#each countries as country, i}
-				<g transform="translate(5,{translate[i] + (i + 1) * label})">
-					<text font-size={label / 2} y={-0.13 * label}>{country.country}</text>
-					{#each country.data as item, j}
-						<rect
-							width={size}
-							height={size}
-							x={(j % wn) * (size + padding)}
-							y={Math.floor(j / wn) * (size + padding)}
-							fill={params.colorScale(item.first_party)}
-						/>
-					{/each}
-				</g>
-			{/each}
-		</g></svg
-	>
+			<g transform="translate({margin},{margin})">
+				{#each countries as country, i}
+					<g
+						transform="translate({wide ? translate[i] + gap * i : 0},{wide
+							? label
+							: translate[i] + label * (i + 1)})"
+					>
+						<text font-size={label * 0.5} y={-0.13 * label} font-weight="bold"
+							>{wide && country.country == 'Northern Ireland' ? 'NI' : country.country}</text
+						>
+						{#each country.data as item, j}
+							<rect
+								width={s}
+								height={s}
+								stroke="#fff"
+								stroke-width="1"
+								x={wide ? Math.floor(j / row_col) * s : (j % row_col) * s}
+								y={wide ? (j % row_col) * s : Math.floor(j / row_col) * s}
+								fill={params.colorScale(item.first_party)}
+								on:focus={(e) => handleMouseover(e, item)}
+								on:mouseover={(e) => handleMouseover(e, item)}
+								on:mouseout={handleMouseout}
+								on:blur={handleMouseout}
+							/>
+						{/each}
+					</g>
+				{/each}
+			</g>
+		</g>
+		<Tooltip
+			bind:x
+			bind:y
+			bind:content
+			backgroundColor="#fffd"
+			textAnchor="left"
+			dominantBaseline="top"
+		/>
+	</svg>
 {/if}
+
+<style>
+	rect:hover {
+		stroke: none;
+	}
+</style>

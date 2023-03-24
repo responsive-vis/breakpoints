@@ -8,7 +8,7 @@
 
 	import { fitRect, getAreaSize } from '$lib/helpers.js';
 	import FillLegend from '$lib/components/FillLegend.svelte';
-	// import Tooltip from '$lib/components/Tooltip.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	$: height = context.height;
 	$: width = context.width;
@@ -35,10 +35,7 @@
 	const bounds = path.bounds(mesh);
 	const mapAR = (bounds[1][0] - bounds[0][0]) / (bounds[1][1] - bounds[0][1]);
 
-	const mapInitSize =
-		initW / initH < mapAR
-			? { width: initW, height: initW / mapAR }
-			: { width: initH * mapAR, height: initH };
+	const mapInitSize = { width: bounds[1][0] - bounds[0][0], height: bounds[1][1] - bounds[0][1] };
 
 	// get area sizes
 	geo.features.forEach((feature) => {
@@ -55,18 +52,39 @@
 	let s, t;
 	$: ({ s, t } = fitRect([mapInitSize.width, mapInitSize.height], [width, height]));
 
-	// $: console.log(s, minArea);
+	// Tooltip
+	let tx, ty, content;
+	$: tx, ty, content;
+	function handleMouseover(event, item) {
+		tx = event.layerX + 5;
+		ty = event.layerY;
+		content = item.properties.PCON13NM
+			? item.properties.PCON13NM
+			: toTitleCase(item.properties.PC_NAME);
+	}
+	function handleMouseout(event) {
+		tx = -100;
+		ty = -100;
+		content = '';
+	}
+	// https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript?noredirect=1&lq=1
+	function toTitleCase(str) {
+		return str.replace(/\w\S*/g, function (txt) {
+			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+		});
+	}
 
 	checkConditions = function (w, h) {
 		// using constants: mapAR, mapInitSize, minArea
 		let ar = w / h; // aspect ratio of container
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
-		return (
-			minArea * Math.pow(s, 2) > conditions.minAreaSize &&
-			// aspect ratio difference
-			ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
-			ar / mapAR <= conditions.maxAspectRatioDiff
-		);
+
+		const c1 = conditions.minAreaSize ? minArea * Math.pow(s, 2) > conditions.minAreaSize : true;
+		const c2 = conditions.maxAspectRatioDiff
+			? ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
+			  ar / mapAR <= conditions.maxAspectRatioDiff
+			: true;
+		return c1 && c2;
 	};
 </script>
 
@@ -87,10 +105,14 @@
 						fill={params.colorScale(
 							results.find((x) => x.ons_id === feature.properties.id).first_party
 						)}
+						on:focus={(e) => handleMouseover(e, feature)}
+						on:mouseover={(e) => handleMouseover(e, feature)}
+						on:mouseout={handleMouseout}
+						on:blur={handleMouseout}
 					/>
 				{/each}
 			</g>
-			<g id="mesh">
+			<g id="mesh" pointer-events="none">
 				<path
 					class="mapMesh"
 					d={path(mesh)}
@@ -103,11 +125,19 @@
 				colors={params.colors}
 				labels={params.category_labels}
 				title={params.title}
-				x={initW}
-				y="70"
+				x={mapInitSize.width + bounds[0][0] - 3}
+				y={0.15 * mapInitSize.height + bounds[0][1]}
 				anchorX="right"
-				{s}
+				s="0.69"
 			/>
-		</g></svg
-	>
+		</g>
+		<Tooltip
+			bind:x={tx}
+			bind:y={ty}
+			bind:content
+			backgroundColor="#fffd"
+			textAnchor="left"
+			dominantBaseline="top"
+		/>
+	</svg>
 {/if}

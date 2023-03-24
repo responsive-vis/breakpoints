@@ -8,7 +8,7 @@
 
 	import { fitRect } from '$lib/helpers.js';
 	import FillLegend from '$lib/components/FillLegend.svelte';
-	// import Tooltip from '$lib/components/Tooltip.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	$: height = context.height;
 	$: width = context.width;
@@ -19,55 +19,71 @@
 	const hex = data.hex;
 	const results = data.results;
 
-	const hexAR = 0.8;
 	const initW = 500;
 	const initH = 500;
 
-	const hexInitSize =
-		initW / initH > hexAR ? { w: initW, h: initW / hexAR } : { w: initH * hexAR, h: initH };
-
 	// Render the hexes
-	const hexes = renderHexJSON(hex, hexInitSize.w, hexInitSize.h);
+	const hexes = renderHexJSON(hex, initW, initH);
 
-	// get bounds
-	const flat = hexes.map((d) => d.vertices).flat();
-	const x = flat.map((d) => d.x);
-	const y = flat.map((d) => d.y);
+	// get positions of vertices (same for all hexes)
+	const vertices = hexes[0].vertices;
+	const vertices_x = vertices.map((d) => d.x);
+	const vertices_y = vertices.map((d) => d.y);
+
+	// get bounds of positions
 	const bounds = [
-		[d3.min(x), d3.min(y)],
-		[d3.max(x), d3.max(y)]
+		[
+			d3.min(hexes, (d) => d.x) + d3.min(vertices_x),
+			d3.min(hexes, (d) => d.y) + d3.min(vertices_y)
+		],
+		[d3.max(hexes, (d) => d.x) + d3.max(vertices_x), d3.max(hexes, (d) => d.y) + d3.max(vertices_y)]
 	];
+
+	const hexAR = (bounds[1][0] - bounds[0][0]) / (bounds[1][1] - bounds[0][1]);
+	const hexInitSize = { w: bounds[1][0] - bounds[0][0], h: bounds[1][1] - bounds[0][1] };
 
 	// get width of first hex (which is the same as all others)
 	const hexWidth = d3.max(hexes[0].vertices, (d) => d.x) - d3.min(hexes[0].vertices, (d) => d.x);
-
-	// Add the hex codes as labels
-	// hexmap
-	// 	.append("text")
-	// 	.append("tspan")
-	// 	.attr("text-anchor", "middle")
-	// 	.text(function(hex) {return hex.key;});
 
 	// compute scale and translate
 	let s, t;
 	$: ({ s, t } = fitRect([hexInitSize.w, hexInitSize.h], [width, height]));
 
+	// Tooltip
+	let tx, ty, content;
+	$: tx, ty, content;
+	function handleMouseover(event, item) {
+		tx = event.layerX + 5;
+		ty = event.layerY;
+		content = item.n;
+	}
+	function handleMouseout(event) {
+		tx = -100;
+		ty = -100;
+		content = '';
+	}
+
 	checkConditions = function (w, h) {
 		// using constants: hexAR, hexInitSize, hexWidth
 		const ar = w / h;
 		const s = hexAR > w / h ? w / hexInitSize.w : h / hexInitSize.h;
-		return (
-			hexWidth * s > conditions.minHexSize &&
-			// aspect ratio difference
-			ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
-			ar / hexAR <= conditions.maxAspectRatioDiff
-		);
+
+		const c1 = conditions.minHexSize ? hexWidth * s > conditions.minHexSize : true;
+		const c2 = conditions.maxAspectRatioDiff
+			? ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
+			  ar / hexAR <= conditions.maxAspectRatioDiff
+			: true;
+		return c1 && c2;
 	};
 </script>
 
 <!-- only display if this view state is selected -->
 {#if display}
 	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+		<clipPath id="hex-clip-path">
+			<polygon points={hexes[0].points} />
+		</clipPath>
+
 		<g
 			id="hexmap"
 			class="viewState"
@@ -81,6 +97,11 @@
 						stroke="#fff"
 						stroke-width="2"
 						fill={params.colorScale(results.find((x) => x.ons_id === hex.key).first_party)}
+						clip-path="url(#hex-clip-path)"
+						on:focus={(e) => handleMouseover(e, hex)}
+						on:mouseover={(e) => handleMouseover(e, hex)}
+						on:mouseout={handleMouseout}
+						on:blur={handleMouseout}
 					/>
 				</g>
 			{/each}
@@ -88,11 +109,25 @@
 				colors={params.colors}
 				labels={params.category_labels}
 				title={params.title}
-				x={initW}
-				y="70"
+				x={hexInitSize.w + bounds[0][0] - 3}
+				y={bounds[0][1] + 3}
 				anchorX="right"
-				{s}
+				s="0.97"
 			/>
 		</g>
+		<Tooltip
+			bind:x={tx}
+			bind:y={ty}
+			bind:content
+			backgroundColor="#fffd"
+			textAnchor="left"
+			dominantBaseline="top"
+		/>
 	</svg>
 {/if}
+
+<style>
+	polygon:hover {
+		stroke: none;
+	}
+</style>

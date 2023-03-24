@@ -59,7 +59,12 @@
 
 	let colorScale = d3.scaleOrdinal().domain(categories).range(colors);
 
-	let spec = {
+	let arConditions = true;
+	$: arConditions;
+	$: console.log(arConditions, spec);
+
+	let spec;
+	$: spec = {
 		initSize: { w: 700, h: 700 },
 		maxSize: { w: 1000, h: 700 },
 		minSize: { w: 150, h: 150 },
@@ -79,7 +84,7 @@
 				},
 				conditions: {
 					minAreaSize: 2,
-					maxAspectRatioDiff: 2
+					maxAspectRatioDiff: arConditions ? 2 : false
 				}
 			},
 			{
@@ -93,13 +98,19 @@
 				},
 				conditions: {
 					minHexSize: 5,
-					maxAspectRatioDiff: 2
+					maxAspectRatioDiff: arConditions ? 2 : false
 				}
 			},
 			{
 				type: WaffleChart,
 				data: { results },
-				params: { colorScale },
+				params: { colorScale, orientation: 'vertical' },
+				conditions: { maxAspectRatio: 1 }
+			},
+			{
+				type: WaffleChart,
+				data: { results },
+				params: { colorScale, orientation: 'horizontal' },
 				conditions: {}
 			}
 		]
@@ -119,6 +130,12 @@
 </script>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
+<input
+	type="checkbox"
+	id="ar-conditions"
+	bind:checked={arConditions}
+	style="margin: 0 5px 7px 0"
+/><label for="ar-conditions">Apply aspect ratio difference conditions</label>
 
 <ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
