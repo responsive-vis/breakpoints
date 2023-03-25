@@ -18,7 +18,6 @@
 
 	let checkConditions = Array(spec.viewStates.length).fill(undefined);
 	$: checkConditions;
-	$: viewLandscape;
 
 	let conditions = Array(spec.viewStates.length).fill(true); // intialise array with TRUE for each view state
 	$: conditions = conditions.map((d, i) => {
@@ -26,43 +25,39 @@
 	});
 	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
-	if (computeViewLandscape) {
-		// get view landscape when things are first mounted/rendered
-		onMount(() => {
-			// make sure all conditions functions are loaded
-			waitFor((_) => checkConditions.every(Boolean)).then((_) => {
-				let w = spec.maxSize.w;
-				let h = spec.maxSize.h;
+	$: if (document && computeViewLandscape && checkConditions.every(Boolean)) {
+		// make sure all conditions functions are loaded
+		// waitFor((_) => checkConditions.every(Boolean)).then((_) => {
+		let w = spec.maxSize.w;
+		let h = spec.maxSize.h;
 
-				// get an array of max width by max height that records which view state is displayed at each size
-				let arr = range(0, w, vlInterval).map((x) => {
-					return range(0, h, vlInterval).map((y) => {
-						for (let i = 0; i < spec.viewStates.length; i++) {
-							if (checkConditions[i](x, y)) {
-								return i;
-							}
-						}
-					});
-				});
-
-				// draw this array on a canvas
-				let canvas = document.createElement('canvas');
-				canvas.setAttribute('width', w);
-				canvas.setAttribute('height', h);
-
-				let c = canvas.getContext('2d');
-				for (let x = 0; x < arr.length; x++) {
-					for (let y = 0; y < arr[0].length; y++) {
-						c.fillStyle = typeof arr[x][y] == 'number' ? vlColors[arr[x][y]] : '#fff';
-						c.fillRect(x * vlInterval, y * vlInterval, vlInterval, vlInterval);
+		// get an array of max width by max height that records which view state is displayed at each size
+		let arr = range(0, w, vlInterval).map((x) => {
+			return range(0, h, vlInterval).map((y) => {
+				for (let i = 0; i < spec.viewStates.length; i++) {
+					if (checkConditions[i](x, y)) {
+						return i;
 					}
 				}
-
-				let dataURL = canvas.toDataURL();
-
-				viewLandscape = { mode: 'dynamic', dataArray: arr, dataURL, size: [w, h] };
 			});
 		});
+
+		// draw this array on a canvas
+		let canvas = document.createElement('canvas');
+		canvas.setAttribute('width', w);
+		canvas.setAttribute('height', h);
+
+		let c = canvas.getContext('2d');
+		for (let x = 0; x < arr.length; x++) {
+			for (let y = 0; y < arr[0].length; y++) {
+				c.fillStyle = typeof arr[x][y] == 'number' ? vlColors[arr[x][y]] : '#fff';
+				c.fillRect(x * vlInterval, y * vlInterval, vlInterval, vlInterval);
+			}
+		}
+
+		let dataURL = canvas.toDataURL();
+
+		viewLandscape = { mode: 'dynamic', dataArray: arr, dataURL, size: [w, h] };
 	}
 </script>
 

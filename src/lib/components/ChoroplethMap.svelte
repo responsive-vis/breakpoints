@@ -78,13 +78,14 @@
 		// using constants: mapAR, mapInitSize, minArea
 		let ar = w / h; // aspect ratio of container
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
-
-		const c1 = conditions.minAreaSize ? minArea * Math.pow(s, 2) > conditions.minAreaSize : true;
-		const c2 = conditions.maxAspectRatioDiff
-			? ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
-			  ar / mapAR <= conditions.maxAspectRatioDiff
-			: true;
-		return c1 && c2;
+		let c = [
+			conditions.minAreaSize ? minArea * Math.pow(s, 2) > conditions.minAreaSize : true,
+			conditions.maxAspectRatioDiff
+				? ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
+				  ar / mapAR <= conditions.maxAspectRatioDiff
+				: true
+		];
+		return c.every(Boolean);
 	};
 </script>
 

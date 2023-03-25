@@ -61,7 +61,6 @@
 
 	let arConditions = true;
 	$: arConditions;
-	$: console.log(arConditions, spec);
 
 	let spec;
 	$: spec = {
@@ -116,20 +115,13 @@
 		]
 	};
 
-	// map: data[0],
-	// hex: data[1],
-	// data: data[2],
-	// categories: categories,
-	// collection: 'merged',
-	// hex_id: (d) => d.key
-	// values: (d) => (d ? d.pct_rmn - d.pct_lev : undefined),
-	// name: (feature) => feature.properties.HBName,
-
-	let viewLandscape, landscapeOverlay;
+	let viewLandscape,
+		landscapeOverlay = false;
 	$: viewLandscape, landscapeOverlay;
 </script>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
+<!-- checkbox to disable/enable aspect ratio conditions -->
 <input
 	type="checkbox"
 	id="ar-conditions"
