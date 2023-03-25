@@ -1,6 +1,8 @@
 <script>
 	import * as data from '$lib/data/movies/movies.json';
 
+	import { base } from '$app/paths';
+
 	import VegaLiteWrapper from '$lib/components/VegaLiteWrapper.svelte';
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
@@ -31,11 +33,11 @@
 		mark: 'circle',
 		encoding: {
 			x: {
-				bin: { maxbins: 10 },
+				bin: { maxbins: 30 },
 				field: 'IMDB Rating'
 			},
 			y: {
-				bin: { maxbins: 10 },
+				bin: { maxbins: 30 },
 				field: 'Rotten Tomatoes Rating'
 			},
 			size: {
@@ -55,12 +57,14 @@
 			x: {
 				bin: { maxbins: 60 },
 				field: 'IMDB Rating',
-				type: 'quantitative'
+				type: 'quantitative',
+				axis: { title: 'IMDB Rating' }
 			},
 			y: {
 				bin: { maxbins: 40 },
 				field: 'Rotten Tomatoes Rating',
-				type: 'quantitative'
+				type: 'quantitative',
+				axis: { title: 'Rotten Tomatoes Rating' }
 			},
 			color: {
 				aggregate: 'count',
@@ -77,7 +81,7 @@
 
 	const spec = {
 		minSize: { w: 200, h: 200 },
-		maxSize: { w: 1000, h: 1000 },
+		maxSize: { w: 1000, h: 800 },
 		initSize: { w: 800, h: 600 },
 		viewStates: [
 			{
@@ -85,39 +89,42 @@
 				data,
 				params: { spec: vl_spec_scatterplot },
 				conditions: {
-					// maxOverplotting: 0.003
-					minWidth: 700
+					maxOverplotting: 0.009
+					// minWidth: 400
 				}
 			},
-			{
-				type: VegaLiteWrapper,
-				data,
-				params: { spec: vl_spec_histogram_scatter },
-				conditions: {
-					minWidth: 400
-				}
-			},
+			// {
+			// 	type: VegaLiteWrapper,
+			// 	data,
+			// 	params: { spec: vl_spec_histogram_scatter },
+			// 	conditions: {
+			// 		minWidth: 400
+			// 	}
+			// },
 			{
 				type: VegaLiteWrapper,
 				data,
 				params: { spec: vl_spec_histogram_heatmap },
 				conditions: {
-					minWidth: 50
+					// minWidth: 50
 				}
 			}
 		]
 	};
 
-	let viewLandscape, landscapeOverlay;
-	$: viewLandscape, landscapeOverlay;
+	let viewLandscape = {
+		mode: 'static',
+		imgSrc: `${base}/img/scatterplot_view_landscape.png`,
+		size: [spec.maxSize.w, spec.maxSize.h]
+	};
+	let landscapeOverlay;
+	$: landscapeOverlay;
 </script>
-
-Under construction
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
 
-<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
-	{#if viewLandscape && landscapeOverlay}
+<ResponsiveVis {spec} computeViewLandscape={false} bind:width bind:height bind:viewLandscape>
+	{#if landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}
 </ResponsiveVis>

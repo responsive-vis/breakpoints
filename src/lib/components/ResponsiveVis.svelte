@@ -4,7 +4,9 @@
 	import { waitFor } from '$lib/helpers.js';
 
 	export let spec; // must be provided and contains data and parameters for each view state
+	export let computeViewLandscape = true;
 	export let width, height, viewLandscape; // can optionally be used on the page via e.g. bind:width={...}
+	export let vlInterval = 1; // how detailed should the view landscape be calculated
 
 	// set color scheme for view landscape
 	const vlColors = schemeSet3;
@@ -24,42 +26,44 @@
 	});
 	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
-	// get view landscape when things are first mounted/rendered
-	onMount(() => {
-		// make sure all conditions functions are loaded
-		waitFor((_) => checkConditions.every(Boolean)).then((_) => {
-			let w = spec.maxSize.w;
-			let h = spec.maxSize.h;
+	if (computeViewLandscape) {
+		// get view landscape when things are first mounted/rendered
+		onMount(() => {
+			// make sure all conditions functions are loaded
+			waitFor((_) => checkConditions.every(Boolean)).then((_) => {
+				let w = spec.maxSize.w;
+				let h = spec.maxSize.h;
 
-			// get an array of max width by max height that records which view state is displayed at each size
-			let arr = range(spec.maxSize.w).map((x) => {
-				return range(spec.maxSize.h).map((y) => {
-					for (let i = 0; i < spec.viewStates.length; i++) {
-						if (checkConditions[i](x, y)) {
-							return i;
+				// get an array of max width by max height that records which view state is displayed at each size
+				let arr = range(0, w, vlInterval).map((x) => {
+					return range(0, h, vlInterval).map((y) => {
+						for (let i = 0; i < spec.viewStates.length; i++) {
+							if (checkConditions[i](x, y)) {
+								return i;
+							}
 						}
-					}
+					});
 				});
-			});
 
-			// draw this array on a canvas
-			let canvas = document.createElement('canvas');
-			canvas.setAttribute('width', w);
-			canvas.setAttribute('height', h);
+				// draw this array on a canvas
+				let canvas = document.createElement('canvas');
+				canvas.setAttribute('width', w);
+				canvas.setAttribute('height', h);
 
-			let c = canvas.getContext('2d');
-			for (let x = 0; x < w; x++) {
-				for (let y = 0; y < h; y++) {
-					c.fillStyle = typeof arr[x][y] == 'number' ? vlColors[arr[x][y]] : '#fff';
-					c.fillRect(x, y, 1, 1);
+				let c = canvas.getContext('2d');
+				for (let x = 0; x < arr.length; x++) {
+					for (let y = 0; y < arr[0].length; y++) {
+						c.fillStyle = typeof arr[x][y] == 'number' ? vlColors[arr[x][y]] : '#fff';
+						c.fillRect(x * vlInterval, y * vlInterval, vlInterval, vlInterval);
+					}
 				}
-			}
 
-			let dataURL = canvas.toDataURL();
+				let dataURL = canvas.toDataURL();
 
-			viewLandscape = { data: arr, image: dataURL, size: [w, h] };
+				viewLandscape = { mode: 'dynamic', dataArray: arr, dataURL, size: [w, h] };
+			});
 		});
-	});
+	}
 </script>
 
 <div id="outer-container">
@@ -100,5 +104,6 @@
 		resize: both;
 		position: relative;
 		border: 1px solid #ccc;
+		background-color: #fff;
 	}
 </style>

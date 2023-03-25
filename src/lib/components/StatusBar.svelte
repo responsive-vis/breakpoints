@@ -32,8 +32,11 @@
 		<input type="checkbox" id="show-landscape-overlay" bind:checked={landscapeOverlay} /><label
 			for="show-landscape-overlay">Show view landscape overlay</label
 		>
-		<button id="export-landscape" on:click={window.open(viewLandscape.image)}
-			>Download as PNG</button
+		<button
+			id="export-landscape"
+			on:click={window.open(
+				viewLandscape.mode == 'static' ? viewLandscape.imgSrc : viewLandscape.dataURL
+			)}>Download as PNG</button
 		>
 	</p>
 </div>

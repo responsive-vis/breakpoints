@@ -5,7 +5,9 @@
 <div
 	id="landscape-overlay"
 	style="width:{viewLandscape.size[0]}px; height:{viewLandscape
-		.size[1]}px; background-image: url({viewLandscape.image})"
+		.size[1]}px; background-image: url({viewLandscape.mode == 'static'
+		? viewLandscape.imgSrc
+		: viewLandscape.dataURL})"
 />
 
 <style>

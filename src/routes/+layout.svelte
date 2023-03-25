@@ -21,9 +21,9 @@
 	<nav>
 		<a href="{base}/">about</a> //
 		<a href="{base}/demos/population-map">population map</a> /
-		<a href="{base}/demos/uk-election">uk election</a> /
-		<a href="{base}/demos/network">network</a> /
-		<a href="{base}/demos/vega-scatterplot">scatterplot (vega)</a>
+		<a href="{base}/demos/uk-election">uk election map</a> /
+		<a href="{base}/demos/network">networks</a> /
+		<a href="{base}/demos/vega-scatterplot">movies scatterplot</a>
 	</nav>
 </div>
 
@@ -32,6 +32,9 @@
 </div>
 
 <style>
+	:global(body) {
+		background-color: #eee;
+	}
 	h1 {
 		font-size: 1.2rem;
 		margin: 0.4rem 0;
