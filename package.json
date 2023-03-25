@@ -23,7 +23,7 @@
 	"dependencies": {
 		"d3": "^7.8.2",
 		"d3-hexjson": "^1.1.1",
-		"svelte-vega": "^1.2.0",
-		"topojson-client": "^3.1.0"
+		"topojson-client": "^3.1.0",
+		"vega-embed": "^6.21.3"
 	}
 }

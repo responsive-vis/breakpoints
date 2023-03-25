@@ -16,7 +16,7 @@
 	const vl_spec_scatterplot = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		data: {
-			name: 'default'
+			values: data.default
 		},
 		mark: 'point',
 		encoding: {
@@ -25,32 +25,10 @@
 		}
 	};
 
-	const vl_spec_histogram_scatter = {
-		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-		data: {
-			name: 'default'
-		},
-		mark: 'circle',
-		encoding: {
-			x: {
-				bin: { maxbins: 30 },
-				field: 'IMDB Rating'
-			},
-			y: {
-				bin: { maxbins: 30 },
-				field: 'Rotten Tomatoes Rating'
-			},
-			size: {
-				aggregate: 'count',
-				legend: { orient: 'top-left' }
-			}
-		}
-	};
-
 	const vl_spec_histogram_heatmap = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		data: {
-			name: 'default'
+			values: data.default
 		},
 		mark: 'rect',
 		encoding: {

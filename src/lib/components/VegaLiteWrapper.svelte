@@ -1,29 +1,34 @@
+<script context="module">
+	// this generates a unique id if this Svelte component is used multiple times on the same page
+	// id's will not be reused and keep going up if components are mounted/destroyed repeatedly
+	let i = 0;
+	const id = function () {
+		let name = 'vegalite-div-' + i;
+		i += 1;
+		return name;
+	};
+</script>
+
 <script>
 	export let data, params, conditions; // provided by responsive vis component from spec
 	export let context, display; // provided by responsive vis component
 	export let checkConditions; // exported for use in responsive vis component
 
-	import { dev } from '$app/environment';
-	import { VegaLite } from 'svelte-vega';
 	import { scaleLinear } from 'd3';
 	import { dist } from '$lib/helpers.js';
-	import { onMount } from 'svelte';
+
+	import embed from 'vega-embed';
+
+	// unique div id
+	const div = id();
 
 	// size of container
-
 	$: height = context.height;
 	$: width = context.width;
 
-	// onMount(() => {
-	// 	console.log(width, height);
-	// 	// make sure chart updates
-	// 	height = context.height;
-	// 	width = context.width;
-	// });
-
 	$: display;
 
-	let options = { renderer: 'svg' };
+	let options = { renderer: 'svg', actions: false };
 
 	$: spec = {
 		...params.spec,
@@ -34,6 +39,8 @@
 			transform: [{ filter: params.filter(width, height) }]
 		})
 	};
+
+	$: embed('#' + div, spec, options).catch((error) => console.log(error));
 
 	// CONDITIONS
 	// compute overplotting
@@ -89,10 +96,4 @@
 	};
 </script>
 
-{#if display}
-	{#if dev}
-		<VegaLite {data} {spec} {options} />
-	{:else}
-		-- vega lite currently isn't working --
-	{/if}
-{/if}
+<div id={div} style="display: {display ? 'block' : 'none'}" />

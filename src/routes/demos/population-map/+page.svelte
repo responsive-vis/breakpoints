@@ -71,7 +71,7 @@
 	// Vega Lite spec for bar charts (vertical + horizontal)
 	let vl_barchart_vertical = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-		data: { name: 'default' },
+		data: { values: barData.default },
 		height: { step: 17 },
 		mark: 'bar',
 		encoding: {
@@ -101,7 +101,7 @@
 	};
 	let vl_barchart_horizontal = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-		data: { name: 'default' },
+		data: { values: barData.default },
 		height: { step: 17 },
 		mark: 'bar',
 		encoding: {
