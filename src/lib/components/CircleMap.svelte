@@ -90,21 +90,19 @@
 
 	checkConditions = function (w, h) {
 		let s = mapAR > w / h ? w / mapInitSize.width : h / mapInitSize.height;
-		return (
-			r(lower_bound) * s > conditions.minCircleRadius && // min r - at least 90% of circles visible
-			w / h / mapAR >= 1 / conditions.maxAspectRatioDiff && // aspect ratio difference - no more than 1/3 white space
+		let c = [
+			r(lower_bound) * s > conditions.minCircleRadius, // min r - at least 90% of circles visible
+			w / h / mapAR >= 1 / conditions.maxAspectRatioDiff, // aspect ratio difference - no more than 1/3 white space
 			w / h / mapAR <= conditions.maxAspectRatioDiff
-		);
+		];
+		return c.every(Boolean);
 	};
 </script>
 
 <!-- only display if this view state is selected -->
 {#if display}
 	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
-		<g
-			class="circleMap viewState"
-			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
-		>
+		<g transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})">
 			<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
 			<g id="map" bind:this={map}>
 				{#each data.features as feature}

@@ -93,7 +93,7 @@
 	};
 
 	let spec = {
-		viewStates: [
+		views: [
 			{
 				type: NetPanorama,
 				data: null, // data is included in params

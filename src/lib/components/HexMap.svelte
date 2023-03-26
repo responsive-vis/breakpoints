@@ -67,13 +67,14 @@
 		// using constants: hexAR, hexInitSize, hexWidth
 		const ar = w / h;
 		const s = hexAR > w / h ? w / hexInitSize.w : h / hexInitSize.h;
-
-		const c1 = conditions.minHexSize ? hexWidth * s > conditions.minHexSize : true;
-		const c2 = conditions.maxAspectRatioDiff
-			? ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
-			  ar / hexAR <= conditions.maxAspectRatioDiff
-			: true;
-		return c1 && c2;
+		let c = [
+			conditions.minHexSize ? hexWidth * s > conditions.minHexSize : true,
+			conditions.maxAspectRatioDiff
+				? ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
+				  ar / hexAR <= conditions.maxAspectRatioDiff
+				: true
+		];
+		return c.every(Boolean);
 	};
 </script>
 
@@ -86,7 +87,6 @@
 
 		<g
 			id="hexmap"
-			class="viewState"
 			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
 		>
 			{#each hexes as hex}

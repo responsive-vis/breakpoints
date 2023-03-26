@@ -134,7 +134,7 @@
 		initSize: { w: 1000, h: 600 },
 		maxSize: { w: 1000, h: 700 },
 		minSize: { w: 200, h: 200 },
-		viewStates: [
+		views: [
 			{
 				type: CircleMap, // configured as proportional circle map
 				data,

@@ -61,7 +61,7 @@
 		minSize: { w: 200, h: 200 },
 		maxSize: { w: 1000, h: 800 },
 		initSize: { w: 800, h: 600 },
-		viewStates: [
+		views: [
 			{
 				type: VegaLiteWrapper,
 				data,

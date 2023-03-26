@@ -16,10 +16,10 @@
 	spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
 	spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
 
-	let checkConditions = Array(spec.viewStates.length).fill(undefined);
+	let checkConditions = Array(spec.views.length).fill(undefined);
 	$: checkConditions;
 
-	let conditions = Array(spec.viewStates.length).fill(true); // intialise array with TRUE for each view state
+	let conditions = Array(spec.views.length).fill(true); // intialise array with TRUE for each view state
 	$: conditions = conditions.map((d, i) => {
 		return typeof checkConditions[i] === 'function' ? checkConditions[i](width, height) : true;
 	});
@@ -40,7 +40,7 @@
 		// get an array of max width by max height that records which view state is displayed at each size
 		let arr = range(0, w, vlInterval).map((x) => {
 			return range(0, h, vlInterval).map((y) => {
-				for (let i = 0; i < spec.viewStates.length; i++) {
+				for (let i = 0; i < spec.views.length; i++) {
 					if (checkConditions[i](x, y)) {
 						return i;
 					}
@@ -76,12 +76,12 @@
 		bind:offsetWidth={width}
 		bind:offsetHeight={height}
 	>
-		{#each spec.viewStates as viewState, i}
+		{#each spec.views as view, i}
 			<svelte:component
-				this={viewState.type}
-				data={viewState.data}
-				params={viewState.params}
-				conditions={viewState.conditions}
+				this={view.type}
+				data={view.data}
+				params={view.params}
+				conditions={view.conditions}
 				context={{
 					width,
 					height,

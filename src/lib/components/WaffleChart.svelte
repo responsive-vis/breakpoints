@@ -73,10 +73,12 @@
 	}
 
 	checkConditions = function (w, h) {
-		let c1 = conditions.minWidth ? w > conditions.minWidth : true;
-		let c2 = conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true;
-		let c3 = conditions.maxAspectRatio ? w / h < conditions.maxAspectRatio : true;
-		return c1 && c2 && c3;
+		let c = [
+			conditions.minWidth ? w > conditions.minWidth : true,
+			conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true,
+			conditions.maxAspectRatio ? w / h < conditions.maxAspectRatio : true
+		];
+		return c.every(Boolean);
 	};
 </script>
 
@@ -84,7 +86,7 @@
 	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
 		<clipPath id="rect-clip-path" />
 
-		<g id="wafflechart" class="viewState">
+		<g id="wafflechart">
 			<g transform="translate({margin},{margin})">
 				{#each countries as country, i}
 					<g

@@ -67,7 +67,7 @@
 		initSize: { w: 700, h: 700 },
 		maxSize: { w: 1000, h: 700 },
 		minSize: { w: 150, h: 150 },
-		viewStates: [
+		views: [
 			{
 				type: ChoroplethMap,
 				data: { map, results },

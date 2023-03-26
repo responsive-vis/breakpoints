@@ -94,7 +94,6 @@
 	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
 		<g
 			id="choropleth"
-			class="viewState"
 			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
 		>
 			<g id="polygons">
