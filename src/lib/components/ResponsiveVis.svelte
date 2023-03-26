@@ -12,9 +12,9 @@
 	const vlColors = schemeSet3;
 
 	// default parameters
-	spec.initSize = spec.initSize ? spec.initSize : { w: 600, h: 400 };
-	spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
-	spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
+	$: spec.initSize = spec.initSize ? spec.initSize : { w: 600, h: 400 };
+	$: spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
+	$: spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
 
 	let checkConditions = Array(spec.views.length).fill(undefined);
 	$: checkConditions;
@@ -92,7 +92,7 @@
 			/>
 		{/each}
 	</div>
-	<!-- for optional overlay -->
+	<!-- slot for optional overlay -->
 	<slot />
 </div>
 

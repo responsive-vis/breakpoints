@@ -11,7 +11,8 @@
 </script>
 
 <script>
-	export let data, params, conditions; // provided by responsive vis component from spec
+	// export let data
+	export let params, conditions; // provided by responsive vis component from spec
 	export let context, display; // provided by responsive vis component
 	export let checkConditions; // exported for use in responsive vis component
 
@@ -22,8 +23,14 @@
 	$: width = context.width;
 	$: display;
 
-	let spec = context.spec;
-	let netPanoramaSpec = params;
+	// let spec = context.spec;
+	// let netPanoramaSpec = params;
+
+	$: spec = {
+		...params.spec,
+		width: width,
+		height: height
+	};
 
 	// suppress console logs (the library logs a lot)
 	// console.log = function () {};
@@ -31,12 +38,24 @@
 	// get unique id for div
 	const div = id();
 
-	// wait for div to be ready, then render
+	// doing it in this roundabout way so it rerenders if things change after it's first mounted
+	let mounted = false;
+	$: mounted;
 	onMount(() => {
-		NetPanoramaTemplateViewer.render(netPanoramaSpec, {}, div);
+		mounted = true;
 	});
 
-	checkConditions = (w, h) => true;
+	$: if (mounted) {
+		NetPanoramaTemplateViewer.render(spec, {}, div);
+	}
+
+	checkConditions = function (w, h) {
+		let c = [
+			conditions.minWidth ? w > conditions.minWidth : true,
+			conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true
+		];
+		return c.every(Boolean);
+	};
 </script>
 
 <svelte:head>
@@ -47,5 +66,6 @@
 {#if display}
 	<!-- N.B. The closing tags are necessary - making these divs self-closing will cause errors -->
 	<!-- prettier-ignore -->
-	<div id={div} style="width: 100%; position: relative; top: 0px;"></div>
+	<div id={div} ></div>
+	<!-- style="width: 100%; position: relative; top: 0px;" -->
 {/if}
