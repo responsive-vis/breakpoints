@@ -15,6 +15,47 @@
 
 	// user can select a dataset using the dropdown menu
 	const datasets = {
+		lesmis: {
+			label: 'Les Mis',
+			data: [
+				{
+					name: 'nodes',
+					values: nodes.default
+				},
+				{
+					name: 'links',
+					values: links.default
+				}
+			],
+			networks: [
+				{
+					name: 'network',
+					nodes: 'nodes',
+					links: 'links',
+					directed: true,
+					addReverseLinks: true,
+					source_node: ['id', 'source'],
+					target_node: ['id', 'target'],
+					metrics: [{ metric: 'degree' }]
+				}
+			],
+			nodeLabel: 'name',
+			size: {
+				nodelink: { width: 680, height: 680, x: 10, y: 10 },
+				arcdiagram: {
+					x: 500, // space for arcs on the left
+					y: 10,
+					width: 120,
+					height: 1100
+				},
+				adjacency_matrix: {
+					x: 115, // space for labels
+					y: 115,
+					width: 1000,
+					height: 1000
+				}
+			}
+		},
 		marieboucher: {
 			label: 'Marie Boucher',
 			data: [
@@ -53,7 +94,7 @@
 			size: {
 				nodelink: { width: 680, height: 430, x: 10, y: 10 },
 				arcdiagram: {
-					x: 830, // makes space for arcs on the left
+					x: 830, // space for arcs on the left
 					y: 10,
 					width: 220,
 					height: 1700
@@ -65,51 +106,10 @@
 					height: 1000
 				}
 			}
-		},
-		lesmis: {
-			label: 'Les Mis',
-			data: [
-				{
-					name: 'nodes',
-					values: nodes.default
-				},
-				{
-					name: 'links',
-					values: links.default
-				}
-			],
-			networks: [
-				{
-					name: 'network',
-					nodes: 'nodes',
-					links: 'links',
-					directed: true,
-					addReverseLinks: true,
-					source_node: ['id', 'source'],
-					target_node: ['id', 'target'],
-					metrics: [{ metric: 'degree' }]
-				}
-			],
-			nodeLabel: 'name',
-			size: {
-				nodelink: { width: 680, height: 680, x: 10, y: 10 },
-				arcdiagram: {
-					x: 500, // makes space for arcs on the left
-					y: 10,
-					width: 120,
-					height: 1100
-				},
-				adjacency_matrix: {
-					x: 115,
-					y: 115,
-					width: 1000,
-					height: 1000
-				}
-			}
 		}
 	};
 	const datasetsKeys = Object.keys(datasets);
-	let selectedDataset = 'marieboucher';
+	let selectedDataset = 'lesmis';
 	$: console.log('Dataset updated: ', selectedDataset);
 
 	// based on: https://netpanorama-editor.netlify.app/#marie-boucher
@@ -314,38 +314,35 @@
 	};
 
 	$: spec = {
-		maxSize: [1000, 1000],
+		maxSize: { w: 1000, h: 1000 },
 		views: [
 			{
 				type: NetPanorama,
-				data: null, // data is included in params
+				data: null, // data is included in spec
 				params: { data: selectedDataset, spec: spec_adjacency_matrix },
-				conditions: { minWidth: 700 }
+				conditions: { minAdjacencyMatrixLabelSize: 6 }
 			},
+
 			{
 				type: NetPanorama,
-				data: null, // data is included in params
-				params: { data: selectedDataset, spec: spec_nodelink },
-				conditions: { minWidth: 400 }
-			},
-			{
-				type: NetPanorama,
-				data: null, // data is included in params
+				data: null, // data is included in spec
 				params: { data: selectedDataset, spec: spec_arcdiagram },
+				conditions: { minArcDiagramLabelSize: 6 }
+			},
+			{
+				type: NetPanorama,
+				data: null, // data is included in spec
+				params: { data: selectedDataset, spec: spec_nodelink },
 				conditions: {}
 			}
 		]
 	};
-
-	// $: selectedSpec = specs[selectedDataset];
-	// $: selectedDataset;
 
 	let viewLandscape, landscapeOverlay;
 	$: viewLandscape, landscapeOverlay;
 </script>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
-<span style="color: red">Under construction...</span><br />
 Select dataset:
 <select bind:value={selectedDataset}>
 	{#each datasetsKeys as dataset}

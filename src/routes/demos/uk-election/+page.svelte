@@ -59,7 +59,7 @@
 
 	let colorScale = d3.scaleOrdinal().domain(categories).range(colors);
 
-	let arConditions = true;
+	let arConditions = false;
 	$: arConditions;
 
 	let spec;

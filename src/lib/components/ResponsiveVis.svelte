@@ -1,7 +1,6 @@
 <script>
 	import { range, schemeSet3 } from 'd3';
-	import { onMount } from 'svelte';
-	// import { waitFor } from '$lib/helpers.js';
+	import { afterUpdate, onMount } from 'svelte';
 
 	export let spec; // must be provided and contains data and parameters for each view state
 	export let computeViewLandscape = true;
@@ -31,12 +30,16 @@
 		mounted = true;
 	});
 
-	$: if (mounted && computeViewLandscape && checkConditions.every(Boolean)) {
-		// make sure all conditions functions are loaded
-		// waitFor((_) => checkConditions.every(Boolean)).then((_) => {
+	afterUpdate(() => {
+		if (computeViewLandscape) {
+			updateViewLandscape();
+		}
+	});
+
+	function updateViewLandscape() {
 		let w = spec.maxSize.w;
 		let h = spec.maxSize.h;
-
+		console.log(w, h);
 		// get an array of max width by max height that records which view state is displayed at each size
 		let arr = range(0, w, vlInterval).map((x) => {
 			return range(0, h, vlInterval).map((y) => {

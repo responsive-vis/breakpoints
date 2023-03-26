@@ -49,34 +49,39 @@
 	let mounted = false;
 	onMount(() => {
 		mounted = true;
-		// NetPanoramaTemplateViewer.render(spec, {}, div);
-
-		// // hacky way to make the sizing work
-		// waitFor((_) => document.querySelector('#' + div + ' svg.marks')).then((_) => {
-		// 	svg = document.querySelector('#' + div + ' svg.marks');
-		// 	g = document.querySelector('#' + div + ' svg.marks > g');
-		// });
 	});
-
 	$: if (mounted) {
 		render(spec);
 	}
+	let viewer;
 	async function render(spec) {
-		// render! only once on mount + when spec is updated for any reason
-		NetPanoramaTemplateViewer.render(spec, {}, div);
-		// hacky way to make the sizing work
-		await tick();
+		viewer = await NetPanoramaTemplateViewer.render(spec, {}, div);
+		// console.log(viewer);
+		// window.viewer = viewer;
 
+		// hacky way to make the sizing work
+		await tick(); // wait for it to render the update
 		waitFor((_) => document.querySelector('#' + div + ' svg.marks')).then((_) => {
 			svg = document.querySelector('#' + div + ' svg.marks');
 			g = document.querySelector('#' + div + ' svg.marks > g');
 		});
 	}
 
+	// conditions
+	$: labelHeight = spec && spec.height - spec.y;
+	$: nNodes = viewer && viewer.state.network.nodes.length;
+
 	checkConditions = function (w, h) {
+		let s = Math.min(h / (spec.height + spec.y), w / (spec.width + spec.x));
 		let c = [
 			conditions.minWidth ? w > conditions.minWidth : true,
-			conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true
+			conditions.minAspectRatio ? w / h > conditions.minAspectRatio : true,
+			conditions.minAdjacencyMatrixLabelSize
+				? s * (labelHeight / nNodes) > conditions.minAdjacencyMatrixLabelSize
+				: true,
+			conditions.minArcDiagramLabelSize
+				? s * (spec.height / nNodes) > conditions.minArcDiagramLabelSize
+				: true
 		];
 		return c.every(Boolean);
 	};
