@@ -16,6 +16,7 @@
 
 	import { scaleLinear } from 'd3';
 	import { dist } from '$lib/helpers.js';
+	import { onMount } from 'svelte';
 
 	import embed from 'vega-embed';
 
@@ -40,7 +41,15 @@
 		})
 	};
 
-	$: embed('#' + div, spec, options).catch((error) => console.log(error));
+	let mounted = false;
+	$: mounted;
+	onMount(() => {
+		mounted = true;
+	});
+
+	$: if (mounted) {
+		embed('#' + div, spec, options).catch((error) => console.log(error));
+	}
 
 	// CONDITIONS
 	// compute overplotting

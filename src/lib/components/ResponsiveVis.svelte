@@ -25,7 +25,13 @@
 	});
 	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
 
-	$: if (document && computeViewLandscape && checkConditions.every(Boolean)) {
+	let mounted = false;
+	$: mounted;
+	onMount(() => {
+		mounted = true;
+	});
+
+	$: if (mounted && computeViewLandscape && checkConditions.every(Boolean)) {
 		// make sure all conditions functions are loaded
 		// waitFor((_) => checkConditions.every(Boolean)).then((_) => {
 		let w = spec.maxSize.w;
