@@ -22,8 +22,8 @@
 		<a href="{base}/">about</a> //
 		<a href="{base}/demos/population-map">population map</a> /
 		<a href="{base}/demos/uk-election">uk election map</a> /
-		<a href="{base}/demos/network">networks</a> /
-		<a href="{base}/demos/vega-scatterplot">movies scatterplot</a>
+		<a href="{base}/demos/networks">networks</a> /
+		<a href="{base}/demos/scatterplot">movies scatterplot</a>
 	</nav>
 </div>
 
