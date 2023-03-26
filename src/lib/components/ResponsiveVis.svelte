@@ -1,7 +1,7 @@
 <script>
 	import { range, schemeSet3 } from 'd3';
 	import { onMount } from 'svelte';
-	import { waitFor } from '$lib/helpers.js';
+	// import { waitFor } from '$lib/helpers.js';
 
 	export let spec; // must be provided and contains data and parameters for each view state
 	export let computeViewLandscape = true;

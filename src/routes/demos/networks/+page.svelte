@@ -39,14 +39,32 @@
 									target_node_type: 'person',
 									target_id_field: 'id',
 
-									data: ['*']
+									data: ['*'],
+
+									addReverseLinks: true
 								}
 							]
 						}
 					],
 					transform: [{ type: 'metric', metric: 'degree' }]
 				}
-			]
+			],
+			nodeLabel: 'id',
+			size: {
+				nodelink: { width: 680, height: 430, x: 10, y: 10 },
+				arcdiagram: {
+					x: 830, // makes space for arcs on the left
+					y: 10,
+					width: 220,
+					height: 1700
+				},
+				adjacency_matrix: {
+					x: 115,
+					y: 115,
+					width: 1000,
+					height: 1000
+				}
+			}
 		},
 		lesmis: {
 			label: 'Les Mis',
@@ -66,19 +84,37 @@
 					nodes: 'nodes',
 					links: 'links',
 					directed: true,
+					addReverseLinks: true,
 					source_node: ['id', 'source'],
 					target_node: ['id', 'target'],
 					metrics: [{ metric: 'degree' }]
 				}
-			]
+			],
+			nodeLabel: 'name',
+			size: {
+				nodelink: { width: 680, height: 680, x: 10, y: 10 },
+				arcdiagram: {
+					x: 500, // makes space for arcs on the left
+					y: 10,
+					width: 120,
+					height: 1100
+				},
+				adjacency_matrix: {
+					x: 115,
+					y: 115,
+					width: 1000,
+					height: 1000
+				}
+			}
 		}
 	};
 	const datasetsKeys = Object.keys(datasets);
-	let selectedDataset = 'lesmis';
+	let selectedDataset = 'marieboucher';
 	$: console.log('Dataset updated: ', selectedDataset);
 
 	// based on: https://netpanorama-editor.netlify.app/#marie-boucher
 	$: spec_nodelink = {
+		...datasets[selectedDataset].size.nodelink,
 		data: datasets[selectedDataset].data,
 		networks: datasets[selectedDataset].networks,
 		layouts: [
@@ -119,7 +155,12 @@
 					type: 'circle',
 					area: { field: 'degree', scale: 'radius' },
 					fill: { field: 'degree', scale: 'color' },
-					tooltip: { expression: "datum.id + ' (degree ' + datum.degree + ')' " }
+					tooltip: {
+						expression:
+							'datum.' +
+							datasets[selectedDataset].nodeLabel +
+							" + ' (degree ' + datum.degree + ')' "
+					}
 				}
 			}
 		]
@@ -127,7 +168,7 @@
 
 	// based on: https://netpanorama-editor.netlify.app/#arc-diagram
 	$: spec_arcdiagram = {
-		x: 500, // makes spaces for arcs on the left
+		...datasets[selectedDataset].size.arcdiagram,
 		data: datasets[selectedDataset].data,
 		networks: datasets[selectedDataset].networks,
 		scales: [
@@ -189,7 +230,7 @@
 
 				mark: {
 					type: 'text',
-					text: { field: 'name' },
+					text: { field: datasets[selectedDataset].nodeLabel },
 					dx: 10,
 					dy: 4
 				}
@@ -197,13 +238,95 @@
 		]
 	};
 
+	$: spec_adjacency_matrix = {
+		...datasets[selectedDataset].size.adjacency_matrix,
+		data: datasets[selectedDataset].data,
+		networks: datasets[selectedDataset].networks,
+		scales: [
+			{
+				name: 'color',
+				type: 'linear',
+				scheme: 'reds',
+				domain: [0, 10]
+			}
+		],
+
+		orderings: [
+			{
+				name: 'o',
+				data: 'network.nodes',
+				method: 'optimal-leaf-order',
+				network: 'network'
+			}
+		],
+
+		tables: [
+			{
+				name: 'adjacencyMatrix',
+				data: 'network.links',
+				rowOrder: {
+					order: 'o',
+					field: 'source'
+				},
+				colOrder: {
+					order: 'o',
+					field: 'target'
+				}
+			}
+		],
+		vis: [
+			{
+				table: 'adjacencyMatrix',
+				rowLabels: {
+					field: 'source.' + datasets[selectedDataset].nodeLabel,
+					align: 'right',
+					dx: -10,
+					dy: -3
+				},
+				colLabels: { field: 'target.' + datasets[selectedDataset].nodeLabel, dx: 10, dy: -3 },
+
+				mark: {
+					type: 'square',
+					area: 110,
+
+					fill: {
+						condition: {
+							test: 'datum.size < 1',
+							value: 'white'
+						},
+
+						// otherwise, apply the color scale
+						scale: 'color',
+						expression: 'datum.size'
+					},
+
+					tooltip: {
+						expression:
+							'datum.key[0].' +
+							datasets[selectedDataset].nodeLabel +
+							" + ' -> ' + datum.key[1]." +
+							datasets[selectedDataset].nodeLabel +
+							" + ' (' + datum.size + ')' "
+					}
+				}
+			}
+		]
+	};
+
 	$: spec = {
+		maxSize: [1000, 1000],
 		views: [
 			{
 				type: NetPanorama,
 				data: null, // data is included in params
+				params: { data: selectedDataset, spec: spec_adjacency_matrix },
+				conditions: { minWidth: 700 }
+			},
+			{
+				type: NetPanorama,
+				data: null, // data is included in params
 				params: { data: selectedDataset, spec: spec_nodelink },
-				conditions: { minWidth: 600 }
+				conditions: { minWidth: 400 }
 			},
 			{
 				type: NetPanorama,

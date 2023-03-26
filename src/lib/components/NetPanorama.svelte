@@ -16,21 +16,17 @@
 	export let context, display; // provided by responsive vis component
 	export let checkConditions; // exported for use in responsive vis component
 
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { base } from '$app/paths';
+	import { waitFor } from '$lib/helpers.js';
 
 	$: height = context.height;
 	$: width = context.width;
 	$: display;
 
-	// let spec = context.spec;
-	// let netPanoramaSpec = params;
-
-	$: spec = {
-		...params.spec,
-		width: width,
-		height: height
-	};
+	$: spec = params.spec;
+	$: spec.x = spec.x ? spec.x : 0;
+	$: spec.y = spec.y ? spec.y : 0;
 
 	// suppress console logs (the library logs a lot)
 	// console.log = function () {};
@@ -38,15 +34,43 @@
 	// get unique id for div
 	const div = id();
 
-	// doing it in this roundabout way so it rerenders if things change after it's first mounted
+	// hacky way to make the sizing work
+	let svg, g;
+	$: svg && (svg.style['max-width'] = null);
+	$: svg && (svg.style['max-height'] = null);
+	$: g &&
+		g.setAttribute(
+			'transform',
+			'translate(0,0) scale(' +
+				Math.min(height / (spec.height + spec.y), width / (spec.width + spec.x)) +
+				')'
+		);
+
 	let mounted = false;
-	$: mounted;
 	onMount(() => {
 		mounted = true;
+		// NetPanoramaTemplateViewer.render(spec, {}, div);
+
+		// // hacky way to make the sizing work
+		// waitFor((_) => document.querySelector('#' + div + ' svg.marks')).then((_) => {
+		// 	svg = document.querySelector('#' + div + ' svg.marks');
+		// 	g = document.querySelector('#' + div + ' svg.marks > g');
+		// });
 	});
 
 	$: if (mounted) {
+		render(spec);
+	}
+	async function render(spec) {
+		// render! only once on mount + when spec is updated for any reason
 		NetPanoramaTemplateViewer.render(spec, {}, div);
+		// hacky way to make the sizing work
+		await tick();
+
+		waitFor((_) => document.querySelector('#' + div + ' svg.marks')).then((_) => {
+			svg = document.querySelector('#' + div + ' svg.marks');
+			g = document.querySelector('#' + div + ' svg.marks > g');
+		});
 	}
 
 	checkConditions = function (w, h) {
@@ -63,9 +87,6 @@
 	<script src="{base}/netpanorama-template-viewer/bundle.js"></script>
 </svelte:head>
 
-{#if display}
-	<!-- N.B. The closing tags are necessary - making these divs self-closing will cause errors -->
-	<!-- prettier-ignore -->
-	<div id={div} ></div>
-	<!-- style="width: 100%; position: relative; top: 0px;" -->
-{/if}
+<!-- N.B. The closing tags are necessary - making these divs self-closing will cause errors -->
+<!-- prettier-ignore -->
+<div id={div} style='display: {display? 'block' : 'none'}' ></div>
