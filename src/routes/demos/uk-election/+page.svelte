@@ -127,7 +127,7 @@
 	id="ar-conditions"
 	bind:checked={arConditions}
 	style="margin: 0 5px 7px 0"
-/><label for="ar-conditions">Apply aspect ratio difference conditions</label>
+/><label for="ar-conditions">Apply whitespace conditions</label>
 
 <ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
