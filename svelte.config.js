@@ -9,7 +9,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		paths: {
-			base: dev ? '' : '/data-driven-breakpoints'
+			// base: dev ? '' : '/data-driven-breakpoints'
 		}
 	}
 };
