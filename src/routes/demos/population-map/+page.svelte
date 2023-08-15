@@ -1,9 +1,7 @@
 <script>
 	import { geoEqualEarth, schemeTableau10, scaleOrdinal } from 'd3';
-	import { geoBonne } from 'd3-geo-projection';
 
 	import * as data from '$lib/data/world-population/world_with_continent.json';
-	import * as data_europe from '$lib/data/world-population/subset_europe.json';
 	import * as data_americas from '$lib/data/world-population/subset_americas.json';
 
 	import CircleMap from '$lib/components/CircleMap.svelte';
@@ -238,23 +236,24 @@
 	$: viewLandscape, landscapeOverlay;
 </script>
 
+<svelte:head>
+	<title>Data-Driven Breakpoints | Population Map</title>
+</svelte:head>
+
 <!-- <slot /> -->
-<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
-Select dataset:
-<select bind:value={selectedDataset}>
-	{#each datasetsKeys as dataset}
-		<option value={dataset}>
-			{datasets[dataset].label}
-		</option>
-	{/each}
-</select>
-|
-<input
-	type="checkbox"
-	id="ar-conditions"
-	bind:checked={arConditions}
-	style="margin: 0 5px 7px 0"
-/><label for="ar-conditions">Apply whitespace conditions</label>
+<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
+	Select dataset:
+	<select bind:value={selectedDataset}>
+		{#each datasetsKeys as dataset}
+			<option value={dataset}>
+				{datasets[dataset].label}
+			</option>
+		{/each}
+	</select><br />
+	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
+		>Apply whitespace conditions</label
+	>
+</StatusBar>
 
 <ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}

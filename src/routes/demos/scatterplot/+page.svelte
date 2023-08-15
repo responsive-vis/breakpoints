@@ -99,6 +99,10 @@
 	$: landscapeOverlay;
 </script>
 
+<svelte:head>
+	<title>Data-Driven Breakpoints | Movies Scatterplot</title>
+</svelte:head>
+
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
 
 <ResponsiveVis {spec} computeViewLandscape={false} bind:width bind:height bind:viewLandscape>

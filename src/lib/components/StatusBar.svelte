@@ -12,68 +12,74 @@
 	$: divArea = Math.round(width * height);
 </script>
 
-<div id="controls">
-	<p>
-		<em>
-			Resize the container using the handle in the botton right and watch the visualization update
-			(Chrome/Firefox only).
-		</em>
-	</p>
-
-	<ul>
-		<li>Width: {width} px</li>
-		<li>Height: {height} px</li>
-		<li>Aspect ratio: {divAR}</li>
-		<li>Area: {divArea} px</li>
-		<li />
-	</ul>
-
-	<p>
-		<input type="checkbox" id="show-landscape-overlay" bind:checked={landscapeOverlay} /><label
-			for="show-landscape-overlay">Show view landscape overlay</label
-		>
-		<button
-			id="export-landscape"
-			on:click={window.open(
-				viewLandscape.mode == 'static' ? viewLandscape.imgSrc : viewLandscape.dataURL
-			)}>Download as PNG</button
-		>
-	</p>
-</div>
+<p>
+	<strong>
+		Resize the container using the handle in the botton right and watch the visualization update
+		(Chrome/Firefox only).
+	</strong>
+</p>
+<hr />
+<p>
+	<!-- can't have any whitespace in here -->
+	<span class="left"><strong>Current size</strong></span><span class="stats">Width: {width}px</span
+	><span class="stats">Height: {height}px</span><span class="stats">Aspect ratio: {divAR}</span>
+	<!-- <li>Area: {divArea}px</li> -->
+</p>
+<hr />
+<p>
+	<span class="left"><strong>Options</strong></span><input
+		type="checkbox"
+		id="show-landscape-overlay"
+		bind:checked={landscapeOverlay}
+	/><label for="show-landscape-overlay">Show view landscape overlay</label>
+	<button
+		id="export-landscape"
+		on:click={window.open(
+			viewLandscape.mode == 'static' ? viewLandscape.imgSrc : viewLandscape.dataURL
+		)}>Download as PNG</button
+	>
+</p>
+<p class="marginLeft customRVOptions"><slot /></p>
 
 <style>
-	#controls {
-		/* line-height: 1rem; */
-		margin-bottom: 0.3rem;
-	}
-	p,
-	ul {
+	p {
 		margin: 0;
 		line-height: 1.3rem;
 	}
-	input {
-		margin: 0 5px 7px 0;
-	}
-	ul {
-		list-style-type: none;
+	hr {
+		border: none;
+		border-top: 1px solid #ccc;
 		margin: 0;
-		padding: 0;
-		display: inline-block;
+		max-width: 41rem;
 	}
-	li {
+	span.stats {
 		display: inline-block;
-		width: 150px;
+		width: 6.5rem;
 	}
-	button {
+	span.left {
+		display: inline-block;
+		width: 5rem;
+	}
+	p.marginLeft {
+		margin-left: 5rem;
+	}
+	input[type='checkbox'],
+	:global(.customRVOptions > input[type='checkbox']) {
+		margin-left: 0;
+	}
+	button,
+	:global(.customRVOptions > select) {
 		background-color: white;
 		color: black;
-		border: 2px solid #bebada;
+		border: 1px solid #ccc;
 		border-radius: 2rem;
-		padding: 0.25rem 0.5rem 0.15rem 0.5rem;
-		font-size: 0.8rem;
-		transition-duration: 0.3s;
+		padding: 0 0.5rem 0 0.5rem;
+		font-size: 0.75rem;
+		height: 1.25rem;
 	}
 	button:hover {
-		background-color: #bebada;
+		background-color: #8493d2;
+		color: #f6f6f6;
+		border-color: #f6f6f6;
 	}
 </style>

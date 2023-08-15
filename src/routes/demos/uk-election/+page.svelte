@@ -120,14 +120,16 @@
 	$: viewLandscape, landscapeOverlay;
 </script>
 
-<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
-<!-- checkbox to disable/enable aspect ratio conditions -->
-<input
-	type="checkbox"
-	id="ar-conditions"
-	bind:checked={arConditions}
-	style="margin: 0 5px 7px 0"
-/><label for="ar-conditions">Apply whitespace conditions</label>
+<svelte:head>
+	<title>Data-Driven Breakpoints | UK Election Map</title>
+</svelte:head>
+
+<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
+	<!-- checkbox to disable/enable aspect ratio conditions -->
+	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
+		>Apply whitespace conditions</label
+	>
+</StatusBar>
 
 <ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}

@@ -342,15 +342,20 @@
 	$: viewLandscape, landscapeOverlay;
 </script>
 
-<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
-Select dataset:
-<select bind:value={selectedDataset}>
-	{#each datasetsKeys as dataset}
-		<option value={dataset}>
-			{datasets[dataset].label}
-		</option>
-	{/each}
-</select>
+<svelte:head>
+	<title>Data-Driven Breakpoints | Networks</title>
+</svelte:head>
+
+<StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
+	Select dataset:
+	<select bind:value={selectedDataset}>
+		{#each datasetsKeys as dataset}
+			<option value={dataset}>
+				{datasets[dataset].label}
+			</option>
+		{/each}
+	</select>
+</StatusBar>
 
 <ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
