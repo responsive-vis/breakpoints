@@ -7,9 +7,13 @@
 </svelte:head>
 
 <h2>Demos</h2>
-<p>
-	<a href="{base}/demos/population-map">population map</a><br />
-	<a href="{base}/demos/uk-election">uk election map</a><br />
-	<a href="{base}/demos/networks">networks</a><br />
-	<a href="{base}/demos/scatterplot">movies scatterplot</a>
-</p>
+This website includes four example visualizations:
+
+<ul>
+	<li><a href="{base}/demos/population-map">population map</a></li>
+	<li><a href="{base}/demos/uk-election">uk election map</a></li>
+	<li><a href="{base}/demos/networks">networks</a></li>
+	<li><a href="{base}/demos/scatterplot">movies scatterplot</a></li>
+</ul>
+
+To ensure all features are working as expected, please use a recent version of Chrome or Firefox.
