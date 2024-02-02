@@ -3,13 +3,13 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | About</title>
+	<title>Constraint-Based Breakpoints | About</title>
 </svelte:head>
 
 <h2>About</h2>
 <p>
-	This website contains interactive example visualizations to demonstrate data-driven breakpoints.
-	Explore our <a href="{base}/demos">interactive demos</a> or read more about the
+	This website contains interactive example visualizations to demonstrate constraint-based
+	breakpoints. Explore our <a href="{base}/demos">interactive demos</a> or read more about the
 	<a href="{base}/technical-details">technical details</a>.
 </p>
 

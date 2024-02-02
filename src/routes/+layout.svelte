@@ -17,7 +17,7 @@
 </svelte:head>
 
 <div id="header">
-	<h1>Data-Driven Breakpoints for Responsive Visualization</h1>
+	<h1>Constraint-Based Breakpoints for Responsive Visualization</h1>
 	<nav>
 		<a href="{base}/">about</a>
 		<a href="{base}/technical-details">technical details</a>

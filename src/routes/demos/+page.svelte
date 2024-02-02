@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | Demos</title>
+	<title>Constraint-Based Breakpoints | Demos</title>
 </svelte:head>
 
 <h2>Demos</h2>

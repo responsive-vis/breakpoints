@@ -343,7 +343,7 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | Networks</title>
+	<title>Constraint-Based Breakpoints | Networks</title>
 </svelte:head>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>

@@ -100,7 +100,7 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | Movies Scatterplot</title>
+	<title>Constraint-Based Breakpoints | Movies Scatterplot</title>
 </svelte:head>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />

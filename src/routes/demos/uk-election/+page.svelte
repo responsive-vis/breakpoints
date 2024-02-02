@@ -121,7 +121,7 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | UK Election Map</title>
+	<title>Constraint-Based Breakpoints | UK Election Map</title>
 </svelte:head>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>

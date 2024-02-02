@@ -3,15 +3,12 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | Technical Details</title>
+	<title>Constraint-Based Breakpoints | Technical Details</title>
 </svelte:head>
 
 <h2>Technical Details</h2>
 <p>
-	<a
-		href="https://github.com/data-driven-breakpoints/data-driven-breakpoints.github.io/"
-		target="_blank">View code on GitHub</a
-	>
+	<a href="https://github.com/responsive-vis/breakpoints" target="_blank">View code on GitHub</a>
 </p>
 
 <p>
@@ -30,7 +27,7 @@
 	(omitted here--this includes any configuration options for the visualization like color schemes),
 	and conditions are specified. The full file, running the live demo, is available
 	<a
-		href="https://github.com/data-driven-breakpoints/data-driven-breakpoints.github.io/blob/main/src/routes/demos/uk-election/%2Bpage.svelte"
+		href="https://github.com/responsive-vis/breakpoints/blob/main/src/routes/demos/uk-election/%2Bpage.svelte"
 		>here</a
 	>.
 </p>
@@ -39,8 +36,8 @@
 
 <p>
 	For our four examples, we implemented six Svelte components which we used to create a total of 13
-	different views across four example visualization. We list these below, indicating the data-driven
-	breakpoints implemented in each.
+	different views across four example visualization. We list these below, indicating the constraints
+	implemented in each.
 </p>
 
 <ul>

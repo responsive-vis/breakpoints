@@ -237,7 +237,7 @@
 </script>
 
 <svelte:head>
-	<title>Data-Driven Breakpoints | Population Map</title>
+	<title>Constraint-Based Breakpoints | Population Map</title>
 </svelte:head>
 
 <!-- <slot /> -->
