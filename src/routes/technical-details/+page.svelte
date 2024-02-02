@@ -15,9 +15,9 @@
 	We implemented our design framework as a Svelte component <code>&lt;ResponsiveVis /&gt;</code>.
 	Designers can use the component to create a responsive visualization by supplying a specification.
 	At minimum, the specification must include multiple views. For each view, the specification must
-	provide (1) a Svelte component that creates this visualization and implements its view conditions,
+	provide (1) a Svelte component that creates this visualization and implements its view constraints,
 	(2) the dataset to be visualized, and optionally, (3) parameters for the visualization and (4)
-	parameters for the view conditions.
+	parameters for the view constraints.
 </p>
 
 <p>
@@ -25,7 +25,7 @@
 		href="{base}/demos/uk-election">UK Election example</a
 	>. This specification includes three views; for each view, the type of view, dataset, parameters
 	(omitted here--this includes any configuration options for the visualization like color schemes),
-	and conditions are specified. The full file, running the live demo, is available
+	and constraints are specified. The full file, running the live demo, is available
 	<a
 		href="https://github.com/responsive-vis/breakpoints/blob/main/src/routes/demos/uk-election/%2Bpage.svelte"
 		>here</a
@@ -107,20 +107,20 @@
 		<code>WaffleChart</code>
 		<ul>
 			<li>
-				<i>No conditions.</i>
+				<i>No constraints.</i>
 			</li>
 		</ul>
 	</li>
 </ul>
 
-<p>Additionally, all components support the following (device-based) conditions:</p>
+<p>Additionally, all components support the following (device-based) constraints:</p>
 
 <ul>
 	<li><code>minWidth, minHeight</code> (absolute minimum width/height of the container)</li>
 	<li><code>minAspectRatio, maxAspectRatio</code> (limiting the aspect ratio of the container)</li>
 </ul>
 
-The following table presents all conditions that we have implemented grouped by the three general
+The following table presents all constraints that we have implemented grouped by the three general
 types we introduce in the paper:
 <table>
 	<tr>
