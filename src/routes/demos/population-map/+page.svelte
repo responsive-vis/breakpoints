@@ -47,19 +47,27 @@
 	$: console.log('Dataset updated: ', selectedDataset);
 
 	// colors for circles/bars colored by continent
-	const continents = [
-		'North America',
-		'Asia',
-		'Oceania',
-		'South America',
-		'Europe',
-		'Africa'
-		// 'Antarctica'
-	];
-	const continent_colors = schemeTableau10;
+	const continents = {
+		world: [
+			'North America',
+			'Asia',
+			'Oceania',
+			'South America',
+			'Europe',
+			'Africa'
+			// 'Antarctica'
+		],
+		americas: ['North America', 'South America']
+	};
+	const continent_colors = {
+		world: schemeTableau10,
+		americas: [schemeTableau10[0], schemeTableau10[3]]
+	};
 
-	const circleColor = (d) =>
-		scaleOrdinal().domain(continents).range(continent_colors)(d.properties.continent);
+	$: circleColor = (d) =>
+		scaleOrdinal().domain(continents[selectedDataset]).range(continent_colors[selectedDataset])(
+			d.properties.continent
+		);
 
 	// configure circle legend
 	const legend = {
@@ -129,7 +137,7 @@
 			},
 			color: {
 				field: 'continent',
-				scale: { range: continent_colors, domain: continents },
+				scale: { range: continent_colors[selectedDataset], domain: continents[selectedDataset] },
 				legend: { orient: 'top-right', title: null, offset: 5 }
 			}
 		}
@@ -159,7 +167,7 @@
 			},
 			color: {
 				field: 'continent',
-				scale: { range: continent_colors, domain: continents },
+				scale: { range: continent_colors[selectedDataset], domain: continents[selectedDataset] },
 				legend: { orient: 'bottom-right', title: null, offset: 5 }
 			}
 		}
