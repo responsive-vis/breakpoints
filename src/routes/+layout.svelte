@@ -20,7 +20,6 @@
 	<h1>Constraint-Based Breakpoints for Responsive Visualization</h1>
 	<nav>
 		<a href="{base}/">about</a>
-		<a href="{base}/technical-details">technical details</a>
 		<span id="demos">
 			<a href="{base}/demos">demos:</a><a href="{base}/demos/population-map">population map</a><a
 				href="{base}/demos/uk-election">uk election map</a
