@@ -1,49 +1,45 @@
 <script>
 	import { range, schemeSet3 } from 'd3';
-	import { afterUpdate, onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
-	export let spec; // must be provided and contains data and parameters for each view state
+	export let views; // list of views - must be provided and contains data, parameters, constraint config for each view
+	export let initSize = { w: 600, h: 400 },
+		maxSize = { w: 1000, h: 700 },
+		minSize = { w: 50, h: 50 };
 	export let computeViewLandscape = true;
-	export let width, height, viewLandscape; // can optionally be used on the page via e.g. bind:width={...}
+	export let width, height, viewLandscape; // can optionally be used on the page via bind:width={...}
 	export let vlInterval = 1; // how detailed should the view landscape be calculated
 
-	// set color scheme for view landscape
+	// color scheme for view landscape
 	const vlColors = schemeSet3;
 
-	// default parameters
-	$: spec.initSize = spec.initSize ? spec.initSize : { w: 600, h: 400 };
-	$: spec.maxSize = spec.maxSize ? spec.maxSize : { w: 1000, h: 700 };
-	$: spec.minSize = spec.minSize ? spec.minSize : { w: 50, h: 50 };
+	// set up view switching / constraint checking
+	const viewIDs = range(views.length); // list of view ids
+	let checkConditions = Array(views.length).fill(() => true); // this gets replaced with the actual checkConditions functions below
+	$: display = viewIDs.find((i) => checkConditions[i](width, height));
 
-	let checkConditions = Array(spec.views.length).fill(undefined);
-	$: checkConditions;
-
-	let conditions = Array(spec.views.length).fill(true); // intialise array with TRUE for each view state
-	$: conditions = conditions.map((d, i) => {
-		return typeof checkConditions[i] === 'function' ? checkConditions[i](width, height) : true;
-	});
-	$: display = conditions.findIndex((d) => d); // find the first one where conditions are true
-
+	// check if mounted (required for view landscape function)
 	let mounted = false;
-	$: mounted;
 	onMount(() => {
 		mounted = true;
 	});
 
-	afterUpdate(() => {
-		if (computeViewLandscape) {
-			updateViewLandscape();
-		}
-	});
+	// check if mounted + and if view landscape should be computed manually
+	// then recompute view landscape whenever the views are updated
+	$: mounted && computeViewLandscape && updateViewLandscape(views);
 
-	function updateViewLandscape() {
-		let w = spec.maxSize.w;
-		let h = spec.maxSize.h;
-		console.log(w, h);
-		// get an array of max width by max height that records which view state is displayed at each size
+	async function updateViewLandscape(views) {
+		console.log('...updating view landscape');
+
+		// make sure constraints + views are all done updating before recalculating
+		await tick();
+
+		let w = maxSize.w;
+		let h = maxSize.h;
+		// get an array of max width by max height that records which view is displayed at each size
 		let arr = range(0, w, vlInterval).map((x) => {
 			return range(0, h, vlInterval).map((y) => {
-				for (let i = 0; i < spec.views.length; i++) {
+				for (let i = 0; i < views.length; i++) {
 					if (checkConditions[i](x, y)) {
 						return i;
 					}
@@ -73,13 +69,11 @@
 <div id="outer-container">
 	<div
 		id="container"
-		style="width:{spec.initSize.w}px; height:{spec.initSize.h}px; max-width:{spec.maxSize
-			.w}px; max-height:{spec.maxSize.h}px; min-width:{spec.minSize.w}px; min-height:{spec.minSize
-			.h}px"
+		style="width:{initSize.w}px; height:{initSize.h}px; max-width:{maxSize.w}px; max-height:{maxSize.h}px; min-width:{minSize.w}px; min-height:{minSize.h}px"
 		bind:offsetWidth={width}
 		bind:offsetHeight={height}
 	>
-		{#each spec.views as view, i}
+		{#each views as view, i}
 			<svelte:component
 				this={view.type}
 				data={view.data}
@@ -88,7 +82,7 @@
 				context={{
 					width,
 					height,
-					spec
+					views
 				}}
 				display={display === i}
 				bind:checkConditions={checkConditions[i]}

@@ -9,9 +9,7 @@
 
 	import NetPanorama from '$lib/components/NetPanorama.svelte';
 
-	export let width, height;
-	$: width;
-	$: height;
+	let width, height;
 
 	// user can select a dataset using the dropdown menu
 	const datasets = {
@@ -313,33 +311,29 @@
 		]
 	};
 
-	$: spec = {
-		maxSize: { w: 1000, h: 1000 },
-		views: [
-			{
-				type: NetPanorama,
-				data: null, // data is included in spec
-				params: { data: selectedDataset, spec: spec_adjacency_matrix },
-				conditions: { minAdjacencyMatrixLabelSize: 6 }
-			},
+	$: views = [
+		{
+			type: NetPanorama,
+			data: null, // data is included in spec
+			params: { data: selectedDataset, spec: spec_adjacency_matrix },
+			conditions: { minAdjacencyMatrixLabelSize: 6 }
+		},
 
-			{
-				type: NetPanorama,
-				data: null, // data is included in spec
-				params: { data: selectedDataset, spec: spec_arcdiagram },
-				conditions: { minArcDiagramLabelSize: 6 }
-			},
-			{
-				type: NetPanorama,
-				data: null, // data is included in spec
-				params: { data: selectedDataset, spec: spec_nodelink },
-				conditions: {}
-			}
-		]
-	};
+		{
+			type: NetPanorama,
+			data: null, // data is included in spec
+			params: { data: selectedDataset, spec: spec_arcdiagram },
+			conditions: { minArcDiagramLabelSize: 6 }
+		},
+		{
+			type: NetPanorama,
+			data: null, // data is included in spec
+			params: { data: selectedDataset, spec: spec_nodelink },
+			conditions: {}
+		}
+	];
 
 	let viewLandscape, landscapeOverlay;
-	$: viewLandscape, landscapeOverlay;
 </script>
 
 <svelte:head>
@@ -357,7 +351,7 @@
 	</select>
 </StatusBar>
 
-<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis {views} maxSize="{{ w: 1000, h: 1000 }}," bind:width bind:height bind:viewLandscape>
 	{#if viewLandscape && landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}

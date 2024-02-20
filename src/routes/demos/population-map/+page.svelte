@@ -8,14 +8,10 @@
 	import VegaLiteWrapper from '$lib/components/VegaLiteWrapper.svelte';
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
-	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
 	import ResponsiveVis from '$lib/components/ResponsiveVis.svelte';
+	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
 
-	export let width, height;
-	$: width;
-	$: height;
-
-	console.log(data);
+	let width, height;
 
 	const datasets = {
 		world: {
@@ -44,7 +40,6 @@
 	};
 	const datasetsKeys = Object.keys(datasets);
 	let selectedDataset = 'world';
-	$: console.log('Dataset updated: ', selectedDataset);
 
 	// colors for circles/bars colored by continent
 	const continents = {
@@ -174,74 +169,67 @@
 	};
 
 	let arConditions = false;
-	$: arConditions;
 
-	$: spec = {
-		initSize: { w: 1000, h: 600 },
-		maxSize: { w: 1000, h: 700 },
-		minSize: { w: 200, h: 200 },
-		views: [
-			{
-				type: CircleMap, // configured as proportional circle map
-				data: datasets[selectedDataset].data,
-				params: {
-					projection: datasets[selectedDataset].projection,
-					bounds: datasets[selectedDataset].bounds,
-					circleColor: circleColor,
-					legendTickValues: legendTickValues,
-					legendTickFormat: legendTickFormat,
-					maxCircle: datasets[selectedDataset].maxCircle
-				},
-				conditions: {
-					minCircleRadius: 1,
-					maxAspectRatioDiff: arConditions ? 1.5 : false
-				}
+	$: views = [
+		{
+			type: CircleMap, // configured as proportional circle map
+			data: datasets[selectedDataset].data,
+			params: {
+				projection: datasets[selectedDataset].projection,
+				bounds: datasets[selectedDataset].bounds,
+				circleColor: circleColor,
+				legendTickValues: legendTickValues,
+				legendTickFormat: legendTickFormat,
+				maxCircle: datasets[selectedDataset].maxCircle
 			},
-			{
-				type: CircleMap, // configured as Dorling
-				data: datasets[selectedDataset].data,
-				params: {
-					dorling: true,
-					projection: datasets[selectedDataset].projection,
-					circleColor: circleColor,
-					legendTickValues: legendTickValues,
-					legendTickFormat: legendTickFormat,
-					maxCircle: datasets[selectedDataset].maxCircleDorling
-				},
-				conditions: {
-					minCircleRadius: 1,
-					maxAspectRatioDiff: arConditions ? 1.5 : false
-				}
-			},
-			{
-				type: VegaLiteWrapper,
-				data: getBarData(datasets[selectedDataset].data),
-				params: {
-					spec: vl_barchart_vertical,
-					filter: (w, h) => {
-						return `datum.i < ${(w - 20) / 20}`;
-					}
-				},
-				conditions: {
-					minAspectRatio: 1 // landscape format
-				}
-			},
-			{
-				type: VegaLiteWrapper,
-				data: getBarData(datasets[selectedDataset].data),
-				params: {
-					spec: vl_barchart_horizontal,
-					filter: (w, h) => {
-						return `datum.i < ${(h - 20) / 20}`;
-					}
-				},
-				conditions: {}
+			conditions: {
+				minCircleRadius: 1,
+				maxAspectRatioDiff: arConditions ? 1.5 : false
 			}
-		]
-	};
+		},
+		{
+			type: CircleMap, // configured as Dorling
+			data: datasets[selectedDataset].data,
+			params: {
+				dorling: true,
+				projection: datasets[selectedDataset].projection,
+				circleColor: circleColor,
+				legendTickValues: legendTickValues,
+				legendTickFormat: legendTickFormat,
+				maxCircle: datasets[selectedDataset].maxCircleDorling
+			},
+			conditions: {
+				minCircleRadius: 1,
+				maxAspectRatioDiff: arConditions ? 1.5 : false
+			}
+		},
+		{
+			type: VegaLiteWrapper,
+			data: getBarData(datasets[selectedDataset].data),
+			params: {
+				spec: vl_barchart_vertical,
+				filter: (w, h) => {
+					return `datum.i < ${(w - 20) / 20}`;
+				}
+			},
+			conditions: {
+				minAspectRatio: 1 // landscape format
+			}
+		},
+		{
+			type: VegaLiteWrapper,
+			data: getBarData(datasets[selectedDataset].data),
+			params: {
+				spec: vl_barchart_horizontal,
+				filter: (w, h) => {
+					return `datum.i < ${(h - 20) / 20}`;
+				}
+			},
+			conditions: {}
+		}
+	];
 
 	let viewLandscape, landscapeOverlay;
-	$: viewLandscape, landscapeOverlay;
 </script>
 
 <svelte:head>
@@ -259,11 +247,19 @@
 		{/each}
 	</select><br />
 	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
-		>Apply whitespace conditions</label
+		>Apply white space conditions</label
 	>
 </StatusBar>
 
-<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis
+	{views}
+	initSize={{ w: 1000, h: 600 }}
+	maxSize={{ w: 1000, h: 700 }}
+	minSize={{ w: 200, h: 200 }}
+	bind:width
+	bind:height
+	bind:viewLandscape
+>
 	{#if viewLandscape && landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}

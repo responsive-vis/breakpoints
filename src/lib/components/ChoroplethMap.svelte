@@ -12,9 +12,6 @@
 
 	$: height = context.height;
 	$: width = context.width;
-	$: display;
-
-	const spec = context.spec;
 
 	const topo = data.map;
 	const results = data.results;
@@ -49,12 +46,10 @@
 	const minArea = d3.min(geo.features.filter(filterFunc), (d) => d.area);
 
 	// compute scale and translate
-	let s, t;
 	$: ({ s, t } = fitRect([mapInitSize.width, mapInitSize.height], [width, height]));
 
 	// Tooltip
 	let tx, ty, content;
-	$: tx, ty, content;
 	function handleMouseover(event, item) {
 		tx = event.layerX + 5;
 		ty = event.layerY;
@@ -82,7 +77,7 @@
 			conditions.minAreaSize ? minArea * Math.pow(s, 2) > conditions.minAreaSize : true,
 			conditions.maxAspectRatioDiff
 				? ar / mapAR >= 1 / conditions.maxAspectRatioDiff &&
-				  ar / mapAR <= conditions.maxAspectRatioDiff
+					ar / mapAR <= conditions.maxAspectRatioDiff
 				: true
 		];
 		return c.every(Boolean);
@@ -91,13 +86,14 @@
 
 <!-- only display if this view state is selected -->
 {#if display}
-	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+	<svg {width} {height}>
 		<g
 			id="choropleth"
 			transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})"
 		>
 			<g id="polygons">
 				{#each geo.features as feature}
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<path
 						class="area"
 						id={params.map_id(feature)}

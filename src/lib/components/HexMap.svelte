@@ -12,18 +12,12 @@
 
 	$: height = context.height;
 	$: width = context.width;
-	$: display;
-
-	let spec = context.spec;
 
 	const hex = data.hex;
 	const results = data.results;
 
-	const initW = 500;
-	const initH = 500;
-
-	// Render the hexes
-	const hexes = renderHexJSON(hex, initW, initH);
+	// Initialize the hexes at an arbitrary size of 500x500
+	const hexes = renderHexJSON(hex, 500, 500);
 
 	// get positions of vertices (same for all hexes)
 	const vertices = hexes[0].vertices;
@@ -45,19 +39,18 @@
 	// get width of first hex (which is the same as all others)
 	const hexWidth = d3.max(hexes[0].vertices, (d) => d.x) - d3.min(hexes[0].vertices, (d) => d.x);
 
-	// compute scale and translate
-	let s, t;
+	// compute scale and translate (updated whenever width/height change)
 	$: ({ s, t } = fitRect([hexInitSize.w, hexInitSize.h], [width, height]));
 
-	// Tooltip
+	// tooltip
 	let tx, ty, content;
-	$: tx, ty, content;
 	function handleMouseover(event, item) {
 		tx = event.layerX + 5;
 		ty = event.layerY;
 		content = item.n;
 	}
 	function handleMouseout(event) {
+		// clear and hide outside of viewport
 		tx = -100;
 		ty = -100;
 		content = '';
@@ -71,7 +64,7 @@
 			conditions.minHexSize ? hexWidth * s > conditions.minHexSize : true,
 			conditions.maxAspectRatioDiff
 				? ar / hexAR >= 1 / conditions.maxAspectRatioDiff &&
-				  ar / hexAR <= conditions.maxAspectRatioDiff
+					ar / hexAR <= conditions.maxAspectRatioDiff
 				: true
 		];
 		return c.every(Boolean);
@@ -80,7 +73,7 @@
 
 <!-- only display if this view state is selected -->
 {#if display}
-	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+	<svg {width} {height}>
 		<clipPath id="hex-clip-path">
 			<polygon points={hexes[0].points} />
 		</clipPath>
@@ -91,6 +84,7 @@
 		>
 			{#each hexes as hex}
 				<g transform="translate({hex.x},{hex.y})">
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<polygon
 						class="hex"
 						points={hex.points}

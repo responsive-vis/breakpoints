@@ -9,9 +9,7 @@
 	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
 	import ResponsiveVis from '$lib/components/ResponsiveVis.svelte';
 
-	export let width, height;
-	$: width;
-	$: height;
+	let width, height;
 
 	const vl_spec_scatterplot = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
@@ -57,43 +55,27 @@
 		}
 	};
 
-	const spec = {
-		minSize: { w: 200, h: 200 },
-		maxSize: { w: 1000, h: 800 },
-		initSize: { w: 800, h: 600 },
-		views: [
-			{
-				type: VegaLiteWrapper,
-				data,
-				params: { spec: vl_spec_scatterplot },
-				conditions: {
-					maxOverplotting: 0.009
-					// minWidth: 400
-				}
-			},
-			// {
-			// 	type: VegaLiteWrapper,
-			// 	data,
-			// 	params: { spec: vl_spec_histogram_scatter },
-			// 	conditions: {
-			// 		minWidth: 400
-			// 	}
-			// },
-			{
-				type: VegaLiteWrapper,
-				data,
-				params: { spec: vl_spec_histogram_heatmap },
-				conditions: {
-					// minWidth: 50
-				}
+	const views = [
+		{
+			type: VegaLiteWrapper,
+			data,
+			params: { spec: vl_spec_scatterplot },
+			conditions: {
+				maxOverplotting: 0.009
 			}
-		]
-	};
+		},
+		{
+			type: VegaLiteWrapper,
+			data,
+			params: { spec: vl_spec_histogram_heatmap },
+			conditions: {}
+		}
+	];
 
 	let viewLandscape = {
 		mode: 'static',
 		imgSrc: `${base}/img/scatterplot_view_landscape.png`,
-		size: [spec.maxSize.w, spec.maxSize.h]
+		size: [1000, 800]
 	};
 	let landscapeOverlay;
 	$: landscapeOverlay;
@@ -105,7 +87,16 @@
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape />
 
-<ResponsiveVis {spec} computeViewLandscape={false} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis
+	{views}
+	minSize={{ w: 200, h: 200 }}
+	maxSize={{ w: 1000, h: 800 }}
+	initSize={{ w: 800, h: 600 }}
+	computeViewLandscape={false}
+	bind:width
+	bind:height
+	bind:viewLandscape
+>
 	{#if landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}

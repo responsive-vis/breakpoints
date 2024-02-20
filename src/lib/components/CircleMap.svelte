@@ -5,7 +5,6 @@
 
 	$: height = context.height;
 	$: width = context.width;
-	$: display;
 
 	import {
 		geoPath,
@@ -22,17 +21,16 @@
 
 	let map, circles;
 
-	let spec = context.spec;
+	// arbitrary size for svg viewbox
+	const initW = 500,
+		initH = 500;
 
 	// fit projection to container + geo data
-	const initW = 500;
-	const initH = 500;
 	$: projection = params.projection;
 	$: projection.fitSize([initW, initH], data);
 	$: path = geoPath(projection);
 
 	$: bounds = path.bounds(data);
-	$: console.log(bounds);
 	$: mapAR = (bounds[1][0] - bounds[0][0]) / (bounds[1][1] - bounds[0][1]);
 
 	$: mapInitSize =
@@ -101,7 +99,7 @@
 			conditions.minCircleRadius ? r(lower_bound) * s > conditions.minCircleRadius : true, // min r - at least 90% of circles visible
 			conditions.maxAspectRatioDiff
 				? (w / h / mapAR >= 1 / conditions.maxAspectRatioDiff, // aspect ratio difference - no more than 1/3 white space
-				  w / h / mapAR <= conditions.maxAspectRatioDiff)
+					w / h / mapAR <= conditions.maxAspectRatioDiff)
 				: true
 		];
 		return c.every(Boolean);
@@ -110,7 +108,7 @@
 
 <!-- only display if this view state is selected -->
 {#if display}
-	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+	<svg {width} {height}>
 		<g transform="translate({t[0] - s * bounds[0][0]},{t[1] - s * bounds[0][1]}) scale({s})">
 			<!-- transform to make map + circles align with top left corner; will be centered in adapt function -->
 			<g id="map" bind:this={map}>
@@ -127,6 +125,7 @@
 			</g>
 			<g id="circles" bind:this={circles}>
 				{#each data.features as feature}
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<circle
 						r={r(feature.properties.POP_EST)}
 						cx={params.dorling

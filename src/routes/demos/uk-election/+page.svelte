@@ -60,64 +60,56 @@
 	let colorScale = d3.scaleOrdinal().domain(categories).range(colors);
 
 	let arConditions = false;
-	$: arConditions;
 
-	let spec;
-	$: spec = {
-		initSize: { w: 700, h: 700 },
-		maxSize: { w: 1000, h: 700 },
-		minSize: { w: 150, h: 150 },
-		views: [
-			{
-				type: ChoroplethMap,
-				data: { map, results },
-				params: {
-					colors: colors,
-					category_labels: category_labels,
-					title: 'UK General Election 2019',
-					projection: d3.geoAlbers().rotate([0, 0]),
-					map_id: (d) => d.properties.id,
-					data_id: (d) => d.ons_id,
-					colorScale: colorScale,
-					values: (d) => d.first_party
-				},
-				conditions: {
-					minAreaSize: 2,
-					maxAspectRatioDiff: arConditions ? 2 : false
-				}
+	$: views = [
+		{
+			type: ChoroplethMap,
+			data: { map, results },
+			params: {
+				colors: colors,
+				category_labels: category_labels,
+				title: 'UK General Election 2019',
+				projection: d3.geoAlbers().rotate([0, 0]),
+				map_id: (d) => d.properties.id,
+				data_id: (d) => d.ons_id,
+				colorScale: colorScale,
+				values: (d) => d.first_party
 			},
-			{
-				type: HexMap,
-				data: { hex, results },
-				params: {
-					colors: colors,
-					category_labels: category_labels,
-					title: 'UK General Election 2019',
-					colorScale: colorScale
-				},
-				conditions: {
-					minHexSize: 5,
-					maxAspectRatioDiff: arConditions ? 2 : false
-				}
-			},
-			{
-				type: WaffleChart,
-				data: { results },
-				params: { colorScale, orientation: 'vertical' },
-				conditions: { maxAspectRatio: 1 }
-			},
-			{
-				type: WaffleChart,
-				data: { results },
-				params: { colorScale, orientation: 'horizontal' },
-				conditions: {}
+			conditions: {
+				minAreaSize: 2,
+				maxAspectRatioDiff: arConditions ? 2 : false
 			}
-		]
-	};
+		},
+		{
+			type: HexMap,
+			data: { hex, results },
+			params: {
+				colors: colors,
+				category_labels: category_labels,
+				title: 'UK General Election 2019',
+				colorScale: colorScale
+			},
+			conditions: {
+				minHexSize: 5,
+				maxAspectRatioDiff: arConditions ? 2 : false
+			}
+		},
+		{
+			type: WaffleChart,
+			data: { results },
+			params: { colorScale, orientation: 'vertical' },
+			conditions: { maxAspectRatio: 1 }
+		},
+		{
+			type: WaffleChart,
+			data: { results },
+			params: { colorScale, orientation: 'horizontal' },
+			conditions: {}
+		}
+	];
 
 	let viewLandscape,
 		landscapeOverlay = false;
-	$: viewLandscape, landscapeOverlay;
 </script>
 
 <svelte:head>
@@ -127,11 +119,19 @@
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
 	<!-- checkbox to disable/enable aspect ratio conditions -->
 	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
-		>Apply whitespace conditions</label
+		>Apply white space conditions</label
 	>
 </StatusBar>
 
-<ResponsiveVis {spec} bind:width bind:height bind:viewLandscape>
+<ResponsiveVis
+	{views}
+	initSize={{ w: 700, h: 700 }}
+	maxSize={{ w: 1000, h: 700 }}
+	minSize={{ w: 150, h: 150 }}
+	bind:width
+	bind:height
+	bind:viewLandscape
+>
 	{#if viewLandscape && landscapeOverlay}
 		<ViewLandscapeOverlay {viewLandscape} />
 	{/if}

@@ -27,8 +27,6 @@
 	$: height = context.height;
 	$: width = context.width;
 
-	$: display;
-
 	let options = { renderer: 'svg', actions: false };
 
 	$: spec = {
@@ -42,7 +40,6 @@
 	};
 
 	let mounted = false;
-	$: mounted;
 	onMount(() => {
 		mounted = true;
 	});
@@ -88,7 +85,6 @@
 		}
 		return overplotting / total;
 	}
-	// }
 
 	checkConditions = function (w, h) {
 		let c = [

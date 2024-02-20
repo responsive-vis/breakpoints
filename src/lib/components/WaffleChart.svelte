@@ -7,9 +7,6 @@
 
 	$: height = context.height;
 	$: width = context.width;
-	$: display;
-
-	let spec = context.spec;
 
 	const results = data.results;
 
@@ -51,7 +48,6 @@
 	let w, h, s, row_col, translate;
 	$: w = width - margin * 2;
 	$: h = wide ? height - label - margin * 2 : height - label * n_categories - margin * 2; // 20px for each header, 5px *2 for margins
-	// $: s = (Math.sqrt(w * h * n_datapoints + n_categories * Math.pow(w, 2)) - 2 * w) / n_datapoints;
 	$: s = wide
 		? Math.pow(((w * h) / n_datapoints) * 0.5, 0.56)
 		: Math.pow(((w * h) / n_datapoints) * 0.8, 0.51);
@@ -60,7 +56,6 @@
 
 	// Tooltip
 	let x, y, content;
-	$: x, y, content;
 	function handleMouseover(event, item) {
 		x = event.layerX + 5;
 		y = event.layerY;
@@ -83,7 +78,7 @@
 </script>
 
 {#if display}
-	<svg width={spec.maxSize.w} height={spec.maxSize.h} id="svg">
+	<svg {width} {height} id="svg">
 		<clipPath id="rect-clip-path" />
 
 		<g id="wafflechart">
@@ -98,6 +93,7 @@
 							>{wide && country.country == 'Northern Ireland' ? 'NI' : country.country}</text
 						>
 						{#each country.data as item, j}
+							<!-- svelte-ignore a11y-no-static-element-interactions -->
 							<rect
 								width={s}
 								height={s}
