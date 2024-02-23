@@ -14,8 +14,7 @@
 
 <p>
 	<strong>
-		Resize the container using the handle in the botton right and watch the visualization update
-		(Chrome/Firefox only).
+		Resize the container using the handle in the botton right and watch the visualization update.
 	</strong>
 </p>
 <hr />
@@ -23,7 +22,6 @@
 	<!-- can't have any whitespace in here -->
 	<span class="left"><strong>Current size</strong></span><span class="stats">Width: {width}px</span
 	><span class="stats">Height: {height}px</span><span class="stats">Aspect ratio: {divAR}</span>
-	<!-- <li>Area: {divArea}px</li> -->
 </p>
 <hr />
 <p>

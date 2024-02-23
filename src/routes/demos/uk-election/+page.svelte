@@ -119,7 +119,7 @@
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
 	<!-- checkbox to disable/enable aspect ratio conditions -->
 	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
-		>Apply white space conditions</label
+		>Apply white space constraints</label
 	>
 </StatusBar>
 

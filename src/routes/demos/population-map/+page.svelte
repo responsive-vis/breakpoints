@@ -247,7 +247,7 @@
 		{/each}
 	</select><br />
 	<input type="checkbox" id="ar-conditions" bind:checked={arConditions} /><label for="ar-conditions"
-		>Apply white space conditions</label
+		>Apply white space constraints</label
 	>
 </StatusBar>
 
