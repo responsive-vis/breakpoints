@@ -1,5 +1,6 @@
 <script>
 	import { base } from '$app/paths';
+	import ComponentDetails from '$lib/components/ComponentDetails.svelte';
 </script>
 
 <svelte:head>
@@ -14,9 +15,9 @@
 
 <p>Here's a short video that shows all example visualizations:</p>
 
-<video controls src="{base}/demovideo.mp4" type="video/mp4" width="960px" height="540px" />
+<!-- <video controls src="{base}/demovideo.mp4" type="video/mp4" width="960px" height="540px" /> -->
 
-<h2>Technical Details</h2>
+<h2>Code Specification</h2>
 <p>
 	<a href="https://github.com/responsive-vis/breakpoints" target="_blank">View code on GitHub</a>
 </p>
@@ -42,93 +43,131 @@
 	>.
 </p>
 
-<img src="{base}/img/codesnippet.jpg" />
+<img src="{base}/img/code_snippet.png" />
+
+<h2>Implemented Visualization Components</h2>
 
 <p>
 	For our four examples, we implemented six Svelte components which we used to create a total of 13
-	different views across four example visualization. We list these below, indicating the constraints
-	implemented in each.
+	different views across four example visualizations. We list these below, indicating the
+	constraints implemented in each.
 </p>
 
-<ul>
+<ComponentDetails
+	title="VegaLiteWrapper"
+	description="A wrapper for Vega-Lite."
+	screenshots={[
+		'scatterplot',
+		'heatmap',
+		'barchart_americas',
+		'barchart_world',
+		'barchart2_americas',
+		'barchart2_world'
+	]}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/VegaLiteWrapper.svelte"
+	examples={['scatterplot', 'population-map']}
+>
 	<li>
-		<code>VegaLiteWrapper</code> (a wrapper for Vega-Lite)
-		<ul>
-			<li>
-				<code>maxOverplotting</code> (measuring and limiting the amount of overplotting in a scatterplot)
-			</li>
-		</ul>
+		<code>maxOverplotting</code>: measures and limits the amount of overplotting in a scatterplot.
+		In this example, we quantify overplotting by first computing how many pairs of circles overlap
+		in the scatterplot, i.e., we check for each possible pair of circles whether they overlap or
+		not. We record overlap as a value between 0 and 1 for each of these pairs, where 1 indicates
+		identical positions and 0 indicates no overlap. We then sum all these values and divide that by
+		the number of possible pairs (a number equivalent to all circles fully overlapping).
 	</li>
-	<li>
-		<code>NetPanorama</code> (a wrapper for
-		<a href="https://netpanorama.netlify.app" target="_blank">NetPanorama</a>, a declarative grammar
-		for networks)
+</ComponentDetails>
 
-		<ul>
-			<li>
-				<code>minAdjacencyMatrixLabelSize</code> (requiring a minimum size for the labels in an adjacency
-				matrix)
-			</li>
-			<li>
-				<code>minArcDiagramLabelSize</code> (requiring a minimum size for the labels in an arc diagram)
-			</li>
-		</ul>
+<ComponentDetails
+	title="NetPanorama"
+	description="A wrapper for
+			<a href='https://netpanorama.netlify.app' target='_blank'>NetPanorama</a>, a declarative
+			grammar for networks."
+	screenshots={['arcdiagram_lesmis', 'matrix_lesmis', 'nodelink_lesmis']}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/NetPanorama.svelte"
+	examples={['networks']}
+>
+	<li>
+		<code>minAdjacencyMatrixLabelSize</code>: requires a minimum size for the labels in an adjacency
+		matrix, to be provided in px. Setting a minimum size for the labels automatically creates a
+		minimum size for each matrix cell.
 	</li>
 	<li>
-		<code>ChoroplethMap</code> (a choropleth map created with D3)
+		<code>minArcDiagramLabelSize</code>: requires a minimum size for the labels in an arc diagram,
+		to be provided in px. Setting a minimum size for the labels automatically creates a minimum
+		distance between the nodes.
+	</li>
+</ComponentDetails>
 
-		<ul>
-			<li>
-				<code>minAreaSize</code> (specify a minimum size for the smallest area on the map)
-			</li>
-			<li>
-				<code>maxAspectRatioDiff</code> (specify a maximum difference between the aspect ratio of the
-				map and the container)
-			</li>
-		</ul>
+<ComponentDetails
+	title="ChoroplethMap"
+	description="A choropleth map created with D3."
+	screenshots={['choropleth_uk']}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/ChoroplethMap.svelte"
+	examples={['uk-election']}
+>
+	<li>
+		<code>minAreaSize</code>: specify a minimum size for the smallest area on the map. We identify
+		the smallest area on the map and check if its area is above the specified size in px.
 	</li>
 	<li>
-		<code>CircleMap</code> (a proportional circle map with a Dorling cartogram option, creating with
-		D3)
+		<code>maxAspectRatioDiff</code>: specify a maximum difference between the aspect ratio of the
+		map and the container. We determine the natural aspect ratio of the map, and compare this to the
+		current aspect ratio of the container. We then check if the container is wider or narrower than
+		the map by more than the specified percentage.
+	</li>
+</ComponentDetails>
 
-		<ul>
-			<li>
-				<code>minCircleRadius</code> (specify a minimum radius for the smallest circle on the map)
-			</li>
-			<li>
-				<code>maxAspectRatioDiff</code> (specify a maximum difference between the aspect ratio of the
-				map and the container)
-			</li>
-		</ul>
+<ComponentDetails
+	title="CircleMap"
+	description="A proportional circle map with a Dorling cartogram option, created with D3."
+	screenshots={['circle_map_americas', 'circle_map_world', 'dorling_americas', 'dorling_world']}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/CircleMap.svelte"
+	examples={['population-map']}
+>
+	<li>
+		<code>minCircleRadius</code>: specify a minimum radius for the smallest circle on the map. We
+		identify the smallest circle on the map and check if it is above the specified minimum radius.
 	</li>
 	<li>
-		<code>HexMap</code>
-		<ul>
-			<li>
-				<code>minHexSize</code> (specify a minimum width for the hexagons on the map)
-			</li>
-			<li>
-				<code>maxAspectRatioDiff</code> (specify a maximum difference between the aspect ratio of the
-				map and the container)
-			</li>
-		</ul>
+		<code>maxAspectRatioDiff</code>: specify a maximum difference between the aspect ratio of the
+		map and the container. We determine the natural aspect ratio of the map, and compare this to the
+		current aspect ratio of the container. We then check if the container is wider or narrower than
+		the map by more than the specified percentage.
+	</li>
+</ComponentDetails>
+
+<ComponentDetails
+	title="HexMap"
+	description="A hexagonal grid map created with D3 and the d3-hexjson library."
+	screenshots={['hexmap_uk']}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/HexMap.svelte"
+	examples={['uk-election']}
+>
+	<li>
+		<code>minHexSize</code>: specify a minimum width for the hexagons on the map. All hexagons are
+		the same size, so we check if their width is above the provided minimum width.
 	</li>
 	<li>
-		<code>WaffleChart</code>
-		<ul>
-			<li>
-				<i>No constraints.</i>
-			</li>
-		</ul>
+		<code>maxAspectRatioDiff</code>: specify a maximum difference between the aspect ratio of the
+		map and the container. We determine the natural aspect ratio of the map, and compare this to the
+		current aspect ratio of the container. We then check if the container is wider or narrower than
+		the map by more than the specified percentage.
 	</li>
-</ul>
+</ComponentDetails>
 
-<p>Additionally, all components support the following (device-based) constraints:</p>
+<ComponentDetails
+	title="WaffleChart"
+	description="A waffle-chart-like visualization created with D3."
+	screenshots={['waffle_uk', 'waffle2_uk']}
+	githubLink="https://github.com/responsive-vis/breakpoints/blob/main/src/lib/components/WaffleChart.svelte"
+	examples={['uk-election']}
+>
+	<li>
+		<i>No constraints.</i>
+	</li>
+</ComponentDetails>
 
-<ul>
-	<li><code>minWidth, minHeight</code> (absolute minimum width/height of the container)</li>
-	<li><code>minAspectRatio, maxAspectRatio</code> (limiting the aspect ratio of the container)</li>
-</ul>
+<h2>Overview by Constraint Type</h2>
 
 The following table presents all constraints that we have implemented grouped by the three general
 types we introduce in the paper:
@@ -149,9 +188,10 @@ types we introduce in the paper:
 </table>
 
 <style>
-	code {
-		font-family: monospace;
+	p {
+		max-width: 900px;
 	}
+
 	table {
 		text-align: left;
 		margin: 10px 0;
@@ -165,5 +205,13 @@ types we introduce in the paper:
 	}
 	td {
 		background-color: #fff;
+	}
+
+	img {
+		max-width: 600px;
+	}
+
+	code {
+		font-family: monospace;
 	}
 </style>

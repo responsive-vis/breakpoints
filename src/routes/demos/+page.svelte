@@ -15,5 +15,3 @@ This website includes four example visualizations:
 	<li><a href="{base}/demos/networks">networks</a></li>
 	<li><a href="{base}/demos/scatterplot">movies scatterplot</a></li>
 </ul>
-
-To ensure all features are working as expected, please use a recent version of Chrome or Firefox.
