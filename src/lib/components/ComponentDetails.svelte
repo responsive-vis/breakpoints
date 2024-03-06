@@ -23,7 +23,7 @@
 <a href={githubLink} target="_blank">View component code on GitHub</a><br />
 <strong>Used in:</strong>
 {#each examples as example, i}
-	<a href="/demos/{example}">{exList[example]}</a>{#if i < examples.length - 1}, &#20;
+	<a href="{base}/demos/{example}">{exList[example]}</a>{#if i < examples.length - 1}, &#20;
 	{/if}
 {/each}
 <br />

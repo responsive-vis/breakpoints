@@ -10,8 +10,8 @@
 This website includes four example visualizations:
 
 <ul>
-	<li><a href="{base}/demos/population-map">population map</a></li>
-	<li><a href="{base}/demos/uk-election">uk election map</a></li>
-	<li><a href="{base}/demos/networks">networks</a></li>
-	<li><a href="{base}/demos/scatterplot">movies scatterplot</a></li>
+	<li><a href="{base}/demos/population-map">Population Map</a></li>
+	<li><a href="{base}/demos/uk-election">UK Election Map</a></li>
+	<li><a href="{base}/demos/networks">Networks</a></li>
+	<li><a href="{base}/demos/scatterplot">Movies Scatterplot</a></li>
 </ul>
