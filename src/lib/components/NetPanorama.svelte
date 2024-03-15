@@ -51,11 +51,14 @@
 		mounted = true;
 	});
 	$: if (mounted) {
-		render(spec);
+		NetPanoramaTemplateViewer.render(spec, {}, div);
+
+		scaleVis(spec);
 	}
-	let viewer;
-	async function render(spec) {
-		viewer = await NetPanoramaTemplateViewer.render(spec, {}, div);
+	// let viewer;
+
+	async function scaleVis(spec) {
+		// viewer = await NetPanoramaTemplateViewer.render(spec, {}, div);
 		// console.log(viewer);
 		// window.viewer = viewer;
 
@@ -67,9 +70,9 @@
 		});
 	}
 
-	// conditions
+	// conditions -- only based on spec, does not require anything to be rendered
 	$: labelHeight = spec && spec.height - spec.y;
-	$: nNodes = viewer && viewer.state.network.nodes.length;
+	$: nNodes = spec.data[0].values.length;
 
 	checkConditions = function (w, h) {
 		let s = Math.min(h / (spec.height + spec.y), w / (spec.width + spec.x));
@@ -88,10 +91,10 @@
 </script>
 
 <svelte:head>
-	<!-- importing via import in the script doesn't work because window is not defined at that point -->
 	<script src="{base}/netpanorama-template-viewer/bundle.js"></script>
+	<!-- importing via import in the script doesn't work because window is not defined at that point -->
 </svelte:head>
 
-<!-- N.B. The closing tags are necessary - making these divs self-closing will cause errors -->
+<!-- N.B. The closing tags are necessary - making this div tag self-closing will cause errors -->
 <!-- prettier-ignore -->
 <div id={div} style='display: {display? 'block' : 'none'}' ></div>

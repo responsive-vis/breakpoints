@@ -36,6 +36,8 @@
 
 		let w = maxSize.w;
 		let h = maxSize.h;
+
+		console.log(w, h);
 		// get an array of max width by max height that records which view is displayed at each size
 		let arr = range(0, w, vlInterval).map((x) => {
 			return range(0, h, vlInterval).map((y) => {
