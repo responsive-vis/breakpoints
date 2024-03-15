@@ -13,9 +13,12 @@
 	breakpoints. Explore our <a href="{base}/demos">interactive demos</a>!
 </p>
 
-<p>Here's a short video that shows all example visualizations:</p>
+<p>
+	This video walks you through the population map example in detail, and briefly shows the other
+	examples (recommended to watch in full-screen):
+</p>
 
-<!-- <video controls src="{base}/demovideo.mp4" type="video/mp4" width="960px" height="540px" /> -->
+<video controls src="{base}/demo_video.mp4" type="video/mp4" width="960px" height="540px" />
 
 <h2>Code Specification</h2>
 <p>
