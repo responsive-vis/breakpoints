@@ -3,7 +3,7 @@
 	import ViewLandscapeOverlay from '$lib/components/ViewLandscapeOverlay.svelte';
 	import ResponsiveVis from '$lib/components/ResponsiveVis.svelte';
 
-	import { default as marieboucher } from '$lib/data/marie-boucher/marieboucher.csv';
+	// import { default as marieboucher } from '$lib/data/marie-boucher/marieboucher.csv';
 	import * as links from '$lib/data/les-mis/les-mis-links.json';
 	import * as nodes from '$lib/data/les-mis/les-mis-nodes.json';
 
@@ -53,58 +53,58 @@
 					height: 1000
 				}
 			}
-		},
-		marieboucher: {
-			label: 'Marie Boucher',
-			data: [
-				{
-					name: 'marieboucher',
-					values: marieboucher
-				}
-			],
-			networks: [
-				{
-					name: 'network',
-					parts: [
-						{
-							data: 'marieboucher',
-							yieldsLinks: [
-								{
-									source_id: { field: 'Name1' },
-									source_node_type: 'person',
-									source_id_field: 'id',
-
-									target_id: { field: 'Name2' },
-									target_node_type: 'person',
-									target_id_field: 'id',
-
-									data: ['*'],
-
-									addReverseLinks: true
-								}
-							]
-						}
-					],
-					transform: [{ type: 'metric', metric: 'degree' }]
-				}
-			],
-			nodeLabel: 'id',
-			size: {
-				nodelink: { width: 680, height: 430, x: 10, y: 10 },
-				arcdiagram: {
-					x: 830, // space for arcs on the left
-					y: 10,
-					width: 220,
-					height: 1700
-				},
-				adjacency_matrix: {
-					x: 115,
-					y: 115,
-					width: 1000,
-					height: 1000
-				}
-			}
 		}
+		// marieboucher: {
+		// 	label: 'Marie Boucher',
+		// 	data: [
+		// 		{
+		// 			name: 'marieboucher',
+		// 			values: marieboucher
+		// 		}
+		// 	],
+		// 	networks: [
+		// 		{
+		// 			name: 'network',
+		// 			parts: [
+		// 				{
+		// 					data: 'marieboucher',
+		// 					yieldsLinks: [
+		// 						{
+		// 							source_id: { field: 'Name1' },
+		// 							source_node_type: 'person',
+		// 							source_id_field: 'id',
+
+		// 							target_id: { field: 'Name2' },
+		// 							target_node_type: 'person',
+		// 							target_id_field: 'id',
+
+		// 							data: ['*'],
+
+		// 							addReverseLinks: true
+		// 						}
+		// 					]
+		// 				}
+		// 			],
+		// 			transform: [{ type: 'metric', metric: 'degree' }]
+		// 		}
+		// 	],
+		// 	nodeLabel: 'id',
+		// 	size: {
+		// 		nodelink: { width: 680, height: 430, x: 10, y: 10 },
+		// 		arcdiagram: {
+		// 			x: 830, // space for arcs on the left
+		// 			y: 10,
+		// 			width: 220,
+		// 			height: 1700
+		// 		},
+		// 		adjacency_matrix: {
+		// 			x: 115,
+		// 			y: 115,
+		// 			width: 1000,
+		// 			height: 1000
+		// 		}
+		// 	}
+		// }
 	};
 	const datasetsKeys = Object.keys(datasets);
 	let selectedDataset = 'lesmis';
@@ -341,14 +341,14 @@
 </svelte:head>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
-	Select dataset:
+	<!-- Select dataset:
 	<select bind:value={selectedDataset}>
 		{#each datasetsKeys as dataset}
 			<option value={dataset}>
 				{datasets[dataset].label}
 			</option>
 		{/each}
-	</select>
+	</select> -->
 </StatusBar>
 
 <ResponsiveVis {views} maxSize={{ w: 1000, h: 1000 }} bind:width bind:height bind:viewLandscape>
