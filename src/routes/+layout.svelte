@@ -18,7 +18,7 @@
 
 <div id="header">
 	<h1>Constraint-Based Breakpoints for Responsive Visualization</h1>
-	<nav>
+	<nav data-sveltekit-reload>
 		<a href="{base}/">about</a>
 		<span id="demos">
 			<a href="{base}/demos">demos:</a><a href="{base}/demos/population-map">population map</a><a
