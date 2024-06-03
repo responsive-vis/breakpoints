@@ -16,7 +16,7 @@
 	export let context, display; // provided by responsive vis component
 	export let checkConditions; // exported for use in responsive vis component
 
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { waitFor } from '$lib/helpers.js';
 
@@ -34,17 +34,11 @@
 	// get unique id for div
 	const div = id();
 
-	// hacky way to make the sizing work
 	let svg, g;
-	$: svg && (svg.style['max-width'] = null);
-	$: svg && (svg.style['max-height'] = null);
-	$: g &&
-		g.setAttribute(
-			'transform',
-			'translate(0,0) scale(' +
-				Math.min(height / (spec.height + spec.y), width / (spec.width + spec.x)) +
-				')'
-		);
+	// viewbox gets set by netpanorama so if we just resize the svg it will scale nicely
+	// second part only gets run when svg is defined
+	$: svg && svg.setAttribute('width', width);
+	$: svg && svg.setAttribute('height', height);
 
 	let mounted = false;
 	onMount(() => {
@@ -53,17 +47,7 @@
 	$: if (mounted) {
 		NetPanoramaTemplateViewer.render(spec, {}, div);
 
-		scaleVis(spec);
-	}
-	// let viewer;
-
-	async function scaleVis(spec) {
-		// viewer = await NetPanoramaTemplateViewer.render(spec, {}, div);
-		// console.log(viewer);
-		// window.viewer = viewer;
-
-		// hacky way to make the sizing work
-		await tick(); // wait for it to render the update
+		// to make sizing work -- wait for svg to be rendered, then assign svg + g vars
 		waitFor((_) => document.querySelector('#' + div + ' svg.marks')).then((_) => {
 			svg = document.querySelector('#' + div + ' svg.marks');
 			g = document.querySelector('#' + div + ' svg.marks > g');

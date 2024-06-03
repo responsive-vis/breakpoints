@@ -4,8 +4,12 @@
 	import ResponsiveVis from '$lib/components/ResponsiveVis.svelte';
 
 	// import { default as marieboucher } from '$lib/data/marie-boucher/marieboucher.csv';
-	import * as links from '$lib/data/les-mis/les-mis-links.json';
-	import * as nodes from '$lib/data/les-mis/les-mis-nodes.json';
+
+	import * as random1_nodes from '$lib/data/random-network/random1-nodes.json';
+	import * as random1_links from '$lib/data/random-network/random1-links.json';
+
+	import * as les_mis_nodes from '$lib/data/les-mis/les-mis-nodes.json';
+	import * as les_mis_links from '$lib/data/les-mis/les-mis-links.json';
 
 	import NetPanorama from '$lib/components/NetPanorama.svelte';
 
@@ -18,11 +22,11 @@
 			data: [
 				{
 					name: 'nodes',
-					values: nodes.default
+					values: les_mis_nodes.default
 				},
 				{
 					name: 'links',
-					values: links.default
+					values: les_mis_links.default
 				}
 			],
 			networks: [
@@ -51,6 +55,47 @@
 					y: 115,
 					width: 1000,
 					height: 1000
+				}
+			}
+		},
+		random1: {
+			label: 'Random graph (20 nodes)',
+			data: [
+				{
+					name: 'nodes',
+					values: random1_nodes.default
+				},
+				{
+					name: 'links',
+					values: random1_links.default
+				}
+			],
+			networks: [
+				{
+					name: 'network',
+					nodes: 'nodes',
+					links: 'links',
+					directed: false,
+					addReverseLinks: true,
+					source_node: ['id', 'source'],
+					target_node: ['id', 'target'],
+					metrics: [{ metric: 'degree' }]
+				}
+			],
+			nodeLabel: 'id',
+			size: {
+				nodelink: { width: 200, height: 200, x: 10, y: 10 },
+				arcdiagram: {
+					x: 100, // space for arcs on the left
+					y: 10,
+					width: 20,
+					height: 200
+				},
+				adjacency_matrix: {
+					x: 20, // space for labels
+					y: 20,
+					width: 200,
+					height: 200
 				}
 			}
 		}
@@ -107,7 +152,7 @@
 		// }
 	};
 	const datasetsKeys = Object.keys(datasets);
-	let selectedDataset = 'lesmis';
+	let selectedDataset = 'random1';
 	$: console.log('Dataset updated: ', selectedDataset);
 
 	// based on: https://netpanorama-editor.netlify.app/#marie-boucher
@@ -341,14 +386,14 @@
 </svelte:head>
 
 <StatusBar {width} {height} bind:landscapeOverlay bind:viewLandscape>
-	<!-- Select dataset:
+	Select dataset:
 	<select bind:value={selectedDataset}>
 		{#each datasetsKeys as dataset}
 			<option value={dataset}>
 				{datasets[dataset].label}
 			</option>
 		{/each}
-	</select> -->
+	</select>
 </StatusBar>
 
 <ResponsiveVis {views} maxSize={{ w: 1000, h: 1000 }} bind:width bind:height bind:viewLandscape>
