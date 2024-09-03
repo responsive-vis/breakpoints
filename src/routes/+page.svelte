@@ -10,7 +10,19 @@
 <h2>About</h2>
 <p>
 	This website contains interactive example visualizations to demonstrate constraint-based
-	breakpoints. Explore our <a href="{base}/demos">interactive demos</a>!
+	breakpoints.
+</p>
+<p>
+	This is the companion/demo website for our paper (<a
+		href="https://doi.org/10.1109/TVCG.2024.3410097"
+		target="_blank">available online here</a
+	>): <br />
+	Sarah Schöttler, Jason Dykes, Jo Wood, Uta Hinrichs, and Benjamin Bach.
+	<i>Constraint-Based Breakpoints for Responsive Visualization Design and Development</i>. IEEE
+	Transactions on Visualization and Computer Graphics (2024).
+</p>
+<p>
+	Explore our <a href="{base}/demos">interactive demos</a>!
 </p>
 
 <p>
