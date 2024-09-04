@@ -60,9 +60,6 @@
 	.demos > *:first-child {
 		border-radius: 1rem 0 0 1rem;
 	}
-	.demos > *:first-child::after {
-		content: ':';
-	}
 	.demos > *:last-child {
 		border-radius: 0 1rem 1rem 0;
 	}
