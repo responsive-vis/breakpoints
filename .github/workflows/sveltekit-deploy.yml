@@ -4,6 +4,7 @@ name: Build and Deploy SvelteKit app to Github Pages
 on:
   push:
     branches: ["main"]
+
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -25,11 +26,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v4
         id: pages
-      - uses: oven-sh/setup-bun@v1 
+      - uses: actions/setup-node@v4
         with:
-            bun-version: latest # or specific version
-      - run: bun install --frozen-lockfile
-      - run: bun run build
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
