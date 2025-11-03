@@ -1,5 +1,6 @@
 <script>
 	import Nav from '$lib/components/Nav.svelte';
+	import Banner from '$lib/components/Banner.svelte';
 </script>
 
 <svelte:head>
@@ -15,6 +16,8 @@
 		}
 	</style>
 </svelte:head>
+
+<Banner />
 
 <div id="header">
 	<h1>Constraint-Based Breakpoints for Responsive Visualization</h1>
